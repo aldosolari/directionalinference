@@ -1,0 +1,250 @@
+---
+title: "Simultaneous Directional Inference"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+Supplementary R code for reproducing the examples in the paper ``Simultaneous Directional Inference''. 
+
+## Set up
+
+Install the latest version of the `nplus `  R package:
+
+```{r, results='hide', message=F, warning=F, error=F, comment=NA}
+devtools::install_github("aldosolari/nplus")
+```
+
+## An example: PFT therapy for breast cancer
+
+The data analysed in Gail and Simon (1985) consists of the
+difference in the proportion of patients that are disease free with the PFT treatment versus
+with the FT treatment, in $n = 4$ subgroups defined by age and progesterone receptor levels  ($i = 1$: Age < 50, PR
+< 10; $i = 2$: Age ≥ 50, PR < 10; $i = 3$: Age < 50, PR ≥ 10; $i = 4$: Age ≥ 50, PR ≥ 10).
+
+```{r}
+d_i = c(.163, -.114, -.047, -.151)
+s_i = c(.0788, .0689, .0614, .0547)
+p_right_tail = 1-pnorm(d_i/s_i)
+```
+
+The following Table provides for each subgroup the difference, standard error, and right-tailed $p$-value.
+
+```{r, echo=FALSE, results='asis'}
+tab = rbind( d_i,s_i,p_right_tail )
+tab_df = data.frame(tab)
+colnames(tab_df) <- 1:4
+knitr::kable(tab_df, digits = 3)
+```
+
+Applying the first step of hypothesis selection based on the direction favored by the data,
+we select the hypotheses $H_1^-$, $H_2^+$, $H_3^+$, $H_4^+$ and the corresponding $p$-values:
+
+```{r}
+n = length(p_right_tail)
+S = rep("+",n)
+S[p_right_tail <= 0.5] <- "-" 
+hyp_selected <- paste0(1:n,S)
+p_selected <- 2*pmin(p_right_tail, 1-p_right_tail)
+names(p_selected) <- hyp_selected
+p_selected
+```
+
+Function to compute the power set of a set:
+
+```{r}
+powset <- function(set) { 
+  n <- length(set)
+  masks <- 2^(1:n-1)
+  lapply( 1:2^n-1, function(u) set[ bitwAnd(u, masks) != 0 ] )
+}
+```
+
+Function to compute the $p$-value of the adaptive Simes local test:
+
+```{r}
+p_combi_test <- function(x) { ifelse(min(x)<=0.5, ifelse(length(x) < 3, 1, (sum(x>.5)+1)/(length(x)*0.5) ) * min(sort(x)*length(x)/(1:length(x))),1)  }
+```
+
+Computing the $p$-value for each intersection hypothesis by using the adaptive Simes local test:
+
+```{r, message=F, warning=F, error=F, comment=NA}
+res = round(unlist(
+  lapply(powset(1:n), function(x) p_combi_test(p_selected[x]))
+),4)
+names(res) <- powset(hyp_selected)
+res
+```
+
+Closed testing adjustment:
+```{r}
+res_ct = res
+closure = powset(1:n)
+for (k in 1:length(closure))
+res_ct[[k]] = max(res[sapply(1:length(closure), function(i) all(closure[[k]] %in% closure[[i]]))]) 
+res_ct
+```
+
+
+Partitioning hypotheses:
+```{r}
+Sc = rep("-",n)
+Sc[p_right_tail <= 0.5] <- "+" 
+hyp_part <- powset(1:n)
+for (i in 1:length(hyp_part)){
+hyp_part[[i]] <- Sc
+hyp_part[[i]][ powset(1:n)[[i]] ] <- S[ powset(1:n)[[i]] ]
+}
+res_part <- res
+names(res_part) <- hyp_part
+res_part
+```
+
+
+
+$95\%$ confidence lower and upper bounds for $n^+$ by using the adaptive partitioning procedure with adaptive Simes local tests:
+```{r}
+library(nplus)
+nplus_bound(p_right_tail, alpha=0.05, method="ASimes")
+```
+Index set of identified positive parameters (i.e. $i:\theta_i >0$) and nonpositive parameters ($i:\theta_i \leq 0$) with familywise error rate control at level $\alpha$:
+```{r}
+nplus_fwer(p_right_tail, alpha=0.05, method="ASimes")
+```
+
+Gail, M. and Simon, R. (1985). Testing for qualitative interactions between treatment
+effects and patient subsets. Biometrics, pages 361–372.
+
+## Enhancing meta-analysis
+
+We consider the  data in Konstantopoulos (2011), where the  effect of a modified school calendar (with more frequent but shorter breaks) on student achievement is examined. The meta-analysis uses studies of $n=56$ schools in 11 districts.  The experimental design is a two-group comparison (modified calendar vs traditional
+calendar) which involves computing the standardized mean difference
+$X_i \sim N(\theta_i,1)$, where $\theta_i>0$ indicates a positive effects, i.e. a higher level of achievement in the
+group following the modified school calendar.
+
+We analyze the data by providing the lower and upper bounds on the number of studies with positive effect in all schools and in the (data-driven) top $k$ schools.
+
+Importing data from the R package `metafor `:
+
+```{r, results='hide', message=F, warning=F, error=F, comment=NA}
+require("metafor") || install.packages("metafor")
+```
+
+```{r, message=F, warning=F, error=F, comment=NA}
+dat <- get(data(dat.konstantopoulos2011))
+x <- as.vector(dat$yi / sqrt(dat$vi))
+n <- length(x)
+p_right_tail <- pnorm(x, lower.tail = FALSE)
+```
+Adaptive partitioning procedure: $95\%$ confidence lower and upper bounds on the number of studies with positive/nonpositive effect (`lo+ `/`lo- `  and `up+ `/`up- `) and corresponding number of discoveries (`id+ `/`id- `) for different combining functions: Fisher, Simes, adaptive Simes and adaptive LRT:
+
+```{r}
+RES = matrix(NA, ncol=7, nrow=4)
+RES[,1] = c("Fisher","Simes","ASimes","ALRT")
+colnames(RES) <- c("Local test", "lo+","up+","id+", "lo-","up-","id-")
+for (i in 1:4){
+ res_bound <- nplus_bound(p_right_tail, method=RES[i,1])
+ res_id <- nplus_fwer(p_right_tail, method=RES[i,1])
+ RES[i,2] <- res_bound$lo
+ RES[i,3] <- res_bound$up
+ RES[i,4] <- length(res_id$positive)
+ RES[i,5] <- n-res_bound$up
+ RES[i,6] <- n-res_bound$lo
+ RES[i,7] <- length(res_id$nonpositive)
+}
+RES
+```
+Adaptive partitioning procedure: $95\%$ confidence lower and upper bounds with the Fisher's combining function on the number of studies with positive effect in the (data-driven) top $k$ schools:
+
+```{r}
+ix_best <- sort(pmin(p_right_tail,1-p_right_tail), index.return=TRUE)$ix
+bestk <- sapply(1:n, function(i) 
+  range(which( nplus_pvalue(p_right_tail, method = "Fisher", ix = ix_best[1:i]) > 0.05)) -1
+)
+plot(asp=1, type="s", ylim=c(0,n),xlim=c(1,n),
+     bestk[2,], xlab="k", ylab="95% CI for the top k schools")
+lines(bestk[1,],type="s")
+abline(h=0)
+abline(a=0,b=1)
+abline(v=n)
+for  (i in 1:n){
+  segments(x0=i,x1=i,y0=bestk[1,i], y1=bestk[2,i])
+}
+```
+
+
+
+Directional closed testing procedure: $95\%$ confidence lower and upper bounds on the number of studies with positive/negative effect (`lo+ `/`lo- `  and `up+ `/`up- `) and corresponding number of discoveries (`id+ `/`id- `) for different combining functions: Fisher and Simes:
+
+```{r, results='hide', message=F, warning=F, error=F, comment=NA}
+require("hommel") || install.packages("hommel")
+require("sumSome") || install.packages("sumSome")
+```
+
+```{r}
+S_minus = which(p_right_tail <= 0.5)
+S_plus = which(p_right_tail > 0.5)
+p_twotail = 2*pmin(p_right_tail, 1-p_right_tail)
+RES_CT = matrix(NA, ncol=7, nrow=2)
+RES_CT[,1] = c("Fisher","Simes")
+colnames(RES_CT) <- c("Local test", "lo+","up+","id+", "lo-","up-","id-")
+l_plus_sumsome = sumSome::discoveries(sumPvalsPar(g=p_twotail, S = S_minus, type = "Fisher", independence = TRUE))
+l_minus_sumsome = sumSome::discoveries(sumPvalsPar(g=p_twotail, S = S_plus, type = "Fisher", independence = TRUE))
+RES_CT[1,2]<-l_plus_sumsome
+RES_CT[1,3]<-n-l_minus_sumsome
+RES_CT[1,5]<-l_minus_sumsome
+RES_CT[1,6]<-n-l_plus_sumsome
+ix_plus <- sort(p_right_tail, index.return=TRUE)$ix
+RES_CT[1,4] <- ifelse(l_plus_sumsome > 0, sum(sapply(1:l_plus_sumsome, function(i)
+  sumPvalsPar(g=p_twotail, S=ix_plus[1:i], type = "Fisher", independence = TRUE)$TD) == 1:l_plus_sumsome),
+  0)
+ix_minus <- sort(1-p_right_tail, index.return=TRUE)$ix
+RES_CT[1,7]<- ifelse(l_minus_sumsome>0, sum(sapply(1:l_minus_sumsome, function(i)
+  sumPvalsPar(g=p_twotail, S=ix_minus[1:i], type = "Fisher", independence = TRUE)$TD) == 1:l_minus_sumsome),
+  0)
+res_hommel <- hommel(p_twotail)
+l_plus_hommel = hommel::discoveries(res_hommel, ix = S_minus)
+l_minus_hommel = hommel::discoveries(res_hommel, ix = S_plus)
+RES_CT[2,2]<-l_plus_hommel
+RES_CT[2,3]<-n-l_minus_hommel
+RES_CT[2,4]<-sum(res_hommel@adjusted[S_minus] <= 0.05)
+RES_CT[2,5]<-l_minus_hommel
+RES_CT[2,6]<-n-l_plus_hommel
+RES_CT[2,7]<-sum(res_hommel@adjusted[S_plus] <= 0.05)
+RES_CT
+```
+
+Discoveries by Guo and Romano (2015) procedure with FWER control at 0.05 level:
+
+```{r}
+GuoRomano2015 <- function(p_right_tail, alpha=0.05){
+  
+  p <- p_right_tail
+  n <- length(p)
+  sp2 <- sort( c(p,1-p), index.return=TRUE )
+  REJ <- sp2$x <= alpha / (n - 1:n + 1L + alpha)
+  REJ_NONPOS <-  1:n %in% sp2$ix[REJ]
+  REJ_POS <-  (n+1):(2*n) %in% sp2$ix[REJ]
+  
+  return(list(n_discoveries_positive=sum(REJ_NONPOS), n_discoveries_nonpositive=sum(REJ_POS)))
+  
+}
+GuoRomano2015(p_right_tail)
+```
+
+Konstantopoulos, S. (2011). Fixed effects and variance components estimation in three-level
+meta-analysis. Research Synthesis Methods, 2(1):61–76.
+
+Guo, W. and Romano, J. P. (2015). On stepwise control of directional errors under independence and some dependence. Journal of Statistical Planning and Inference, 163:21–33.
+
