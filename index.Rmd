@@ -20,7 +20,7 @@ Supplementary R code for reproducing the examples in the paper ``Simultaneous Di
 
 ## Set up
 
-Install the latest version of the `nplus `  R package:
+Install the latest version of the [`nplus `](https://github.com/aldosolari/nplus)  R package:
 
 ```{r, results='hide', message=F, warning=F, error=F, comment=NA}
 devtools::install_github("aldosolari/nplus")
