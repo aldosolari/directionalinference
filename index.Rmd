@@ -147,6 +147,7 @@ x <- as.vector(dat$yi / sqrt(dat$vi))
 n <- length(x)
 p_right_tail <- pnorm(x, lower.tail = FALSE)
 ```
+
 Adaptive partitioning procedure: $95\%$ confidence lower and upper bounds on the number of studies with positive/nonpositive effect (`lo+ `/`lo- `  and `up+ `/`up- `) and corresponding number of discoveries (`id+ `/`id- `) for different combining functions: Fisher, Simes, adaptive Simes and adaptive LRT:
 
 ```{r}
@@ -165,7 +166,7 @@ for (i in 1:4){
 }
 RES
 ```
-Adaptive partitioning procedure: $95\%$ confidence lower and upper bounds with the Fisher's combining function on the number of studies with positive effect in the (data-driven) top $k$ schools:
+Adaptive partitioning procedure: $95\%$ confidence lower and upper bounds on the number of studies with positive effect in the (data-driven) top $k$ schools with the Fisher's combining function:
 
 ```{r}
 ix_best <- sort(pmin(p_right_tail,1-p_right_tail), index.return=TRUE)$ix
