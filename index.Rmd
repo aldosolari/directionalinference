@@ -26,6 +26,59 @@ Install the latest version of the [`nplus `](https://github.com/aldosolari/nplus
 devtools::install_github("aldosolari/nplus")
 ```
 
+## Introduction
+
+We consider the problem of inference on the signs of $n>1$ parameters. 
+Let $\theta = (\theta_1,\ldots,\theta_n)$ be a vector of $n$ unknown real-valued parameters. For any $I\subseteq \{1,\ldots,n\}$, let $n^+(I)$ and  $n^-(I)$ be the number of parameters $\theta_i$, $i \in I$ with positive value and negative values, respectively:
+$$
+n^+(I) = |\{ i \in I : \theta_i > 0 \}|, \quad n^-(I) = |\{ i \in I : \theta_i < 0 \}|.
+$$
+Simultaneous inference on $n^+(I)$ and $n^-(I)$ can be obtained by selecting one hypothesis within each pair of one-sided hypotheses
+$$
+ H_i^-: \theta_i \leq 0, \qquad
+ H_i^+: \theta_i \geq 0.
+$$
+where we have right-sided $p$-values $p_i$ for $H_i^-$ and left-sided $p$-values $q_i=1 - p_i$ for $H_i^+$. We select $H_i^-$ if $p_i \leq 1/2$ and $H_i^+$ if $p_i > 1/2$. We denote by $S$ the vector of signs that we condition on: $$S = (sign(p_1-1/2), \ldots, sign(p_n-1/2)), \quad
+ sign(p_i-1/2)  =
+\begin{cases}
+-1 & \text{if } p_i \leq 1/2, \\
+1 & \text{if } p_i > 1/2.
+\end{cases}
+$$
+The *directional closed testing procedure* provides $(1-\alpha)$ confidence bounds $l^+(I)$ and $u^+(I)$ for $n^+(I)$ and confidence bounds $l^-(I)$ and $u^-(I)$ for $n^-(I)$ hat are simultaneous
+for all $I$:
+$$
+\mathrm{P}_{\theta}\Big(
+l_{\alpha}^{+}(I)
+\leq 
+n^{+}(I) 
+\leq 
+u_{\alpha}^{+}(I),\,\,
+l_{\alpha}^{-}(I)
+\leq 
+n^{-}(I) 
+\leq 
+u_{\alpha}^{-}(I),
+ \mathrm{\,\,for\,\,all\,\,}I \mid  S \Big) \geq 1-\alpha.
+$$
+If one is interested only in inference on $n^+(I)$, consider the $n$ pairs
+$$
+ H_i^-: \theta_i \leq 0, \qquad
+ K_i: \theta_i > 0.
+$$
+where $H_i^+$ is modified by removing the equality sign, and thus exactly one of the hypothesis pair $(H_i^-, K_i)$ is true. 
+By using this formulation, the *adaptive partitioning procedure* provides
+bounds for $n^+(I)$ that are uniformly better than those of directional closed testing:
+$$
+\mathrm{P}_{\theta}\Big(
+l_{\alpha}^{+}(I)
+\leq 
+n^{+}(I) 
+\leq 
+u_{\alpha}^{+}(I)
+ \mathrm{\,\,for\,\,all\,\,}I \mid S \Big) \geq 1- \alpha.
+$$
+
 ## An example: PFT therapy for breast cancer
 
 The data analysed in Gail and Simon (1985) consists of the
@@ -42,14 +95,13 @@ p_right_tail = 1-pnorm(d_i/s_i)
 The following Table provides for each subgroup the difference, standard error, and right-tailed $p$-value.
 
 ```{r, echo=FALSE, results='asis'}
-tab = rbind( d_i,s_i,p_right_tail )
-tab_df = data.frame(tab)
-colnames(tab_df) <- 1:4
+tab_df = data.frame(rbind(d_i, s_i, p_right_tail))
+colnames(tab_df) <- paste("i =",1:4)
+rownames(tab_df) <- c("difference", "standard error", "right-tail p-value")
 knitr::kable(tab_df, digits = 3)
 ```
 
-Applying the first step of hypothesis selection based on the direction favored by the data,
-we select the hypotheses $H_1^-$, $H_2^+$, $H_3^+$, $H_4^+$ and the corresponding $p$-values:
+Based on the right-sided $p$-values, we select the hypotheses $H_1^-$, $H_2^+$, $H_3^+$, $H_4^+$ and we adjust for the selection the corresponding $p$-values:
 
 ```{r}
 n = length(p_right_tail)
@@ -233,10 +285,10 @@ GuoRomano2015 <- function(p_right_tail, alpha=0.05){
   
   p <- p_right_tail
   n <- length(p)
-  sp2 <- sort( c(p,1-p), index.return=TRUE )
-  REJ <- sp2$x <= alpha / (n - 1:n + 1L + alpha)
-  REJ_NONPOS <-  1:n %in% sp2$ix[REJ]
-  REJ_POS <-  (n+1):(2*n) %in% sp2$ix[REJ]
+  sp <- sort( c(p,1-p), index.return=TRUE )
+  REJ <- sp$x <= alpha / (n - 1:n + 1L + alpha)
+  REJ_NONPOS <-  1:n %in% sp$ix[REJ]
+  REJ_POS <-  (n+1):(2*n) %in% sp$ix[REJ]
   
   return(list(n_discoveries_positive=sum(REJ_NONPOS), n_discoveries_nonpositive=sum(REJ_POS)))
   

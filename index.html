@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2023-02-06" />
+<meta name="date" content="2023-02-09" />
 
 <title>Simultaneous Directional Inference</title>
 
@@ -331,7 +331,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Simultaneous Directional Inference</h1>
-<h4 class="date">2023-02-06</h4>
+<h4 class="date">2023-02-09</h4>
 
 
 
@@ -342,6 +342,63 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Install the latest version of the <a href="https://github.com/aldosolari/nplus"><code>nplus</code></a> R
 package:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;aldosolari/nplus&quot;</span>)</span></code></pre></div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>We consider the problem of inference on the signs of <span class="math inline">\(n&gt;1\)</span> parameters. Let <span class="math inline">\(\theta = (\theta_1,\ldots,\theta_n)\)</span> be a
+vector of <span class="math inline">\(n\)</span> unknown real-valued
+parameters. For any <span class="math inline">\(I\subseteq
+\{1,\ldots,n\}\)</span>, let <span class="math inline">\(n^+(I)\)</span>
+and <span class="math inline">\(n^-(I)\)</span> be the number of
+parameters <span class="math inline">\(\theta_i\)</span>, <span class="math inline">\(i \in I\)</span> with positive value and negative
+values, respectively: <span class="math display">\[
+n^+(I) = |\{ i \in I : \theta_i &gt; 0 \}|, \quad n^-(I) = |\{ i \in I :
+\theta_i &lt; 0 \}|.
+\]</span> Simultaneous inference on <span class="math inline">\(n^+(I)\)</span> and <span class="math inline">\(n^-(I)\)</span> can be obtained by selecting one
+hypothesis within each pair of one-sided hypotheses <span class="math display">\[
+H_i^-: \theta_i \leq 0, \qquad
+H_i^+: \theta_i \geq 0.
+\]</span> where we have right-sided <span class="math inline">\(p\)</span>-values <span class="math inline">\(p_i\)</span> for <span class="math inline">\(H_i^-\)</span> and left-sided <span class="math inline">\(p\)</span>-values <span class="math inline">\(q_i=1 - p_i\)</span> for <span class="math inline">\(H_i^+\)</span>. We select <span class="math inline">\(H_i^-\)</span> if <span class="math inline">\(p_i
+\leq 1/2\)</span> and <span class="math inline">\(H_i^+\)</span> if
+<span class="math inline">\(p_i &gt; 1/2\)</span>. We denote by <span class="math inline">\(S\)</span> the vector of signs that we condition
+on: <span class="math display">\[S = (sign(p_1-1/2), \ldots,
+sign(p_n-1/2)), \quad
+sign(p_i-1/2)  =
+\begin{cases}
+-1 &amp; \text{if } p_i \leq 1/2, \\
+1 &amp; \text{if } p_i &gt; 1/2.
+\end{cases}
+\]</span> The <em>directional closed testing procedure</em> provides
+<span class="math inline">\((1-\alpha)\)</span> confidence bounds <span class="math inline">\(l^+(I)\)</span> and <span class="math inline">\(u^+(I)\)</span> for <span class="math inline">\(n^+(I)\)</span> and confidence bounds <span class="math inline">\(l^-(I)\)</span> and <span class="math inline">\(u^-(I)\)</span> for <span class="math inline">\(n^-(I)\)</span> hat are simultaneous for all <span class="math inline">\(I\)</span>: <span class="math display">\[
+\mathrm{P}_{\theta}\Big(
+l_{\alpha}^{+}(I)
+\leq
+n^{+}(I)
+\leq
+u_{\alpha}^{+}(I),\,\,
+l_{\alpha}^{-}(I)
+\leq
+n^{-}(I)
+\leq
+u_{\alpha}^{-}(I),
+\mathrm{\,\,for\,\,all\,\,}I \mid  S \Big) \geq 1-\alpha.
+\]</span> If one is interested only in inference on <span class="math inline">\(n^+(I)\)</span>, consider the <span class="math inline">\(n\)</span> pairs <span class="math display">\[
+H_i^-: \theta_i \leq 0, \qquad
+K_i: \theta_i &gt; 0.
+\]</span> where <span class="math inline">\(H_i^+\)</span> is modified
+by removing the equality sign, and thus exactly one of the hypothesis
+pair <span class="math inline">\((H_i^-, K_i)\)</span> is true. By using
+this formulation, the <em>adaptive partitioning procedure</em> provides
+bounds for <span class="math inline">\(n^+(I)\)</span> that are
+uniformly better than those of directional closed testing: <span class="math display">\[
+\mathrm{P}_{\theta}\Big(
+l_{\alpha}^{+}(I)
+\leq
+n^{+}(I)
+\leq
+u_{\alpha}^{+}(I)
+\mathrm{\,\,for\,\,all\,\,}I \mid S \Big) \geq 1- \alpha.
+\]</span></p>
 </div>
 <div id="an-example-pft-therapy-for-breast-cancer" class="section level2">
 <h2>An example: PFT therapy for breast cancer</h2>
@@ -360,29 +417,29 @@ standard error, and right-tailed <span class="math inline">\(p\)</span>-value.</
 <thead>
 <tr class="header">
 <th align="left"></th>
-<th align="right">1</th>
-<th align="right">2</th>
-<th align="right">3</th>
-<th align="right">4</th>
+<th align="right">i = 1</th>
+<th align="right">i = 2</th>
+<th align="right">i = 3</th>
+<th align="right">i = 4</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">d_i</td>
+<td align="left">difference</td>
 <td align="right">0.163</td>
 <td align="right">-0.114</td>
 <td align="right">-0.047</td>
 <td align="right">-0.151</td>
 </tr>
 <tr class="even">
-<td align="left">s_i</td>
+<td align="left">standard error</td>
 <td align="right">0.079</td>
 <td align="right">0.069</td>
 <td align="right">0.061</td>
 <td align="right">0.055</td>
 </tr>
 <tr class="odd">
-<td align="left">p_right_tail</td>
+<td align="left">right-tail p-value</td>
 <td align="right">0.019</td>
 <td align="right">0.951</td>
 <td align="right">0.778</td>
@@ -390,8 +447,8 @@ standard error, and right-tailed <span class="math inline">\(p\)</span>-value.</
 </tr>
 </tbody>
 </table>
-<p>Applying the first step of hypothesis selection based on the
-direction favored by the data, we select the hypotheses <span class="math inline">\(H_1^-\)</span>, <span class="math inline">\(H_2^+\)</span>, <span class="math inline">\(H_3^+\)</span>, <span class="math inline">\(H_4^+\)</span> and the corresponding <span class="math inline">\(p\)</span>-values:</p>
+<p>Based on the right-sided <span class="math inline">\(p\)</span>-values, we select the hypotheses <span class="math inline">\(H_1^-\)</span>, <span class="math inline">\(H_2^+\)</span>, <span class="math inline">\(H_3^+\)</span>, <span class="math inline">\(H_4^+\)</span> and we adjust for the selection the
+corresponding <span class="math inline">\(p\)</span>-values:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">length</span>(p_right_tail)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>S <span class="ot">=</span> <span class="fu">rep</span>(<span class="st">&quot;+&quot;</span>,n)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>S[p_right_tail <span class="sc">&lt;=</span> <span class="fl">0.5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;-&quot;</span> </span>
@@ -603,10 +660,10 @@ functions: Fisher and Simes:</p>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> p_right_tail</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">length</span>(p)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  sp2 <span class="ot">&lt;-</span> <span class="fu">sort</span>( <span class="fu">c</span>(p,<span class="dv">1</span><span class="sc">-</span>p), <span class="at">index.return=</span><span class="cn">TRUE</span> )</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  REJ <span class="ot">&lt;-</span> sp2<span class="sc">$</span>x <span class="sc">&lt;=</span> alpha <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">1</span><span class="sc">:</span>n <span class="sc">+</span> 1L <span class="sc">+</span> alpha)</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  REJ_NONPOS <span class="ot">&lt;-</span>  <span class="dv">1</span><span class="sc">:</span>n <span class="sc">%in%</span> sp2<span class="sc">$</span>ix[REJ]</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  REJ_POS <span class="ot">&lt;-</span>  (n<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span><span class="sc">*</span>n) <span class="sc">%in%</span> sp2<span class="sc">$</span>ix[REJ]</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  sp <span class="ot">&lt;-</span> <span class="fu">sort</span>( <span class="fu">c</span>(p,<span class="dv">1</span><span class="sc">-</span>p), <span class="at">index.return=</span><span class="cn">TRUE</span> )</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  REJ <span class="ot">&lt;-</span> sp<span class="sc">$</span>x <span class="sc">&lt;=</span> alpha <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">1</span><span class="sc">:</span>n <span class="sc">+</span> 1L <span class="sc">+</span> alpha)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  REJ_NONPOS <span class="ot">&lt;-</span>  <span class="dv">1</span><span class="sc">:</span>n <span class="sc">%in%</span> sp<span class="sc">$</span>ix[REJ]</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  REJ_POS <span class="ot">&lt;-</span>  (n<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span><span class="sc">*</span>n) <span class="sc">%in%</span> sp<span class="sc">$</span>ix[REJ]</span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">n_discoveries_positive=</span><span class="fu">sum</span>(REJ_NONPOS), <span class="at">n_discoveries_nonpositive=</span><span class="fu">sum</span>(REJ_POS)))</span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  </span>
