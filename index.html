@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2023-02-09" />
+<meta name="date" content="2023-05-29" />
 
 <title>Simultaneous Directional Inference</title>
 
@@ -331,7 +331,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Simultaneous Directional Inference</h1>
-<h4 class="date">2023-02-09</h4>
+<h4 class="date">2023-05-29</h4>
 
 
 
@@ -465,27 +465,27 @@ corresponding <span class="math inline">\(p\)</span>-values:</p>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span><span class="sc">^</span>n<span class="dv">-1</span>, <span class="cf">function</span>(u) set[ <span class="fu">bitwAnd</span>(u, masks) <span class="sc">!=</span> <span class="dv">0</span> ] )</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>Function to compute the <span class="math inline">\(p\)</span>-value
-of the adaptive Simes local test:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p_combi_test <span class="ot">&lt;-</span> <span class="cf">function</span>(x) { <span class="fu">ifelse</span>(<span class="fu">min</span>(x)<span class="sc">&lt;=</span><span class="fl">0.5</span>, <span class="fu">ifelse</span>(<span class="fu">length</span>(x) <span class="sc">&lt;</span> <span class="dv">3</span>, <span class="dv">1</span>, (<span class="fu">sum</span>(x<span class="sc">&gt;</span>.<span class="dv">5</span>)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">/</span>(<span class="fu">length</span>(x)<span class="sc">*</span><span class="fl">0.5</span>) ) <span class="sc">*</span> <span class="fu">min</span>(<span class="fu">sort</span>(x)<span class="sc">*</span><span class="fu">length</span>(x)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x))),<span class="dv">1</span>)  }</span></code></pre></div>
+of the Simes local test:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p_combi_test <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {  <span class="fu">min</span>(<span class="fu">sort</span>(x)<span class="sc">*</span><span class="fu">length</span>(x)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x)))  }</span></code></pre></div>
 <p>Computing the <span class="math inline">\(p\)</span>-value for each
-intersection hypothesis by using the adaptive Simes local test:</p>
+intersection hypothesis by using the Simes local test:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">unlist</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="fu">powset</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="cf">function</span>(x) <span class="fu">p_combi_test</span>(p_selected[x]))</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>),<span class="dv">4</span>)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(res) <span class="ot">&lt;-</span> <span class="fu">powset</span>(hyp_selected)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>res</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">character</span>(<span class="dv">0</span>)                        <span class="dv">1</span><span class="sc">-</span>                        <span class="dv">2</span><span class="sc">+</span> </span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">1.0000</span>                    <span class="fl">0.0386</span>                    <span class="fl">0.0980</span> </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                      <span class="cn">Inf</span>                    <span class="fl">0.0386</span>                    <span class="fl">0.0980</span> </span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;2+&quot;</span>)                        <span class="dv">3</span><span class="sc">+</span>             <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;3+&quot;</span>) </span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0772</span>                    <span class="fl">0.4440</span>                    <span class="fl">0.0772</span> </span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;2+&quot;</span>, <span class="st">&quot;3+&quot;</span>)       <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;2+&quot;</span>, <span class="st">&quot;3+&quot;</span>)                        <span class="dv">4</span><span class="sc">+</span> </span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.1960</span>                    <span class="fl">0.0772</span>                    <span class="fl">0.0058</span> </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.1960</span>                    <span class="fl">0.1158</span>                    <span class="fl">0.0058</span> </span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;4+&quot;</span>)             <span class="fu">c</span>(<span class="st">&quot;2+&quot;</span>, <span class="st">&quot;4+&quot;</span>)       <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;2+&quot;</span>, <span class="st">&quot;4+&quot;</span>) </span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0115</span>                    <span class="fl">0.0115</span>                    <span class="fl">0.0115</span> </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0115</span>                    <span class="fl">0.0115</span>                    <span class="fl">0.0173</span> </span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;3+&quot;</span>, <span class="st">&quot;4+&quot;</span>)       <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;3+&quot;</span>, <span class="st">&quot;4+&quot;</span>)       <span class="fu">c</span>(<span class="st">&quot;2+&quot;</span>, <span class="st">&quot;3+&quot;</span>, <span class="st">&quot;4+&quot;</span>) </span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0115</span>                    <span class="fl">0.0115</span>                    <span class="fl">0.0115</span> </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0115</span>                    <span class="fl">0.0173</span>                    <span class="fl">0.0173</span> </span>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;2+&quot;</span>, <span class="st">&quot;3+&quot;</span>, <span class="st">&quot;4+&quot;</span>) </span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0115</span> </span></code></pre></div>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0231</span> </span></code></pre></div>
 <p>Closed testing adjustment:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>res_ct <span class="ot">=</span> res</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>closure <span class="ot">=</span> <span class="fu">powset</span>(<span class="dv">1</span><span class="sc">:</span>n)</span>
@@ -493,17 +493,17 @@ intersection hypothesis by using the adaptive Simes local test:</p>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>res_ct[[k]] <span class="ot">=</span> <span class="fu">max</span>(res[<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(closure), <span class="cf">function</span>(i) <span class="fu">all</span>(closure[[k]] <span class="sc">%in%</span> closure[[i]]))]) </span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>res_ct</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              character(0)                        1-                        2+ </span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    1.0000                    0.0772                    0.1960 </span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       Inf                    0.1158                    0.1960 </span></span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             c(&quot;1-&quot;, &quot;2+&quot;)                        3+             c(&quot;1-&quot;, &quot;3+&quot;) </span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0772                    0.4440                    0.0772 </span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.1158                    0.4440                    0.1158 </span></span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             c(&quot;2+&quot;, &quot;3+&quot;)       c(&quot;1-&quot;, &quot;2+&quot;, &quot;3+&quot;)                        4+ </span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.1960                    0.0772                    0.0115 </span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.1960                    0.1158                    0.0231 </span></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             c(&quot;1-&quot;, &quot;4+&quot;)             c(&quot;2+&quot;, &quot;4+&quot;)       c(&quot;1-&quot;, &quot;2+&quot;, &quot;4+&quot;) </span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0115                    0.0115                    0.0115 </span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0231                    0.0231                    0.0231 </span></span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             c(&quot;3+&quot;, &quot;4+&quot;)       c(&quot;1-&quot;, &quot;3+&quot;, &quot;4+&quot;)       c(&quot;2+&quot;, &quot;3+&quot;, &quot;4+&quot;) </span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0115                    0.0115                    0.0115 </span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0231                    0.0231                    0.0231 </span></span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(&quot;1-&quot;, &quot;2+&quot;, &quot;3+&quot;, &quot;4+&quot;) </span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0115</span></span></code></pre></div>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0231</span></span></code></pre></div>
 <p>Partitioning hypotheses:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Sc <span class="ot">=</span> <span class="fu">rep</span>(<span class="st">&quot;-&quot;</span>,n)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>Sc[p_right_tail <span class="sc">&lt;=</span> <span class="fl">0.5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;+&quot;</span> </span>
@@ -516,22 +516,22 @@ intersection hypothesis by using the adaptive Simes local test:</p>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(res_part) <span class="ot">&lt;-</span> hyp_part</span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>res_part</span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(&quot;+&quot;, &quot;-&quot;, &quot;-&quot;, &quot;-&quot;) c(&quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;-&quot;) c(&quot;+&quot;, &quot;+&quot;, &quot;-&quot;, &quot;-&quot;) </span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                1.0000                0.0386                0.0980 </span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   Inf                0.0386                0.0980 </span></span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(&quot;-&quot;, &quot;+&quot;, &quot;-&quot;, &quot;-&quot;) c(&quot;+&quot;, &quot;-&quot;, &quot;+&quot;, &quot;-&quot;) c(&quot;-&quot;, &quot;-&quot;, &quot;+&quot;, &quot;-&quot;) </span></span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.0772                0.4440                0.0772 </span></span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(&quot;+&quot;, &quot;+&quot;, &quot;+&quot;, &quot;-&quot;) c(&quot;-&quot;, &quot;+&quot;, &quot;+&quot;, &quot;-&quot;) c(&quot;+&quot;, &quot;-&quot;, &quot;-&quot;, &quot;+&quot;) </span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.1960                0.0772                0.0058 </span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.1960                0.1158                0.0058 </span></span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(&quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;+&quot;) c(&quot;+&quot;, &quot;+&quot;, &quot;-&quot;, &quot;+&quot;) c(&quot;-&quot;, &quot;+&quot;, &quot;-&quot;, &quot;+&quot;) </span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.0115                0.0115                0.0115 </span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.0115                0.0115                0.0173 </span></span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(&quot;+&quot;, &quot;-&quot;, &quot;+&quot;, &quot;+&quot;) c(&quot;-&quot;, &quot;-&quot;, &quot;+&quot;, &quot;+&quot;) c(&quot;+&quot;, &quot;+&quot;, &quot;+&quot;, &quot;+&quot;) </span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.0115                0.0115                0.0115 </span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.0115                0.0173                0.0173 </span></span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(&quot;-&quot;, &quot;+&quot;, &quot;+&quot;, &quot;+&quot;) </span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.0115</span></span></code></pre></div>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.0231</span></span></code></pre></div>
 <p><span class="math inline">\(95\%\)</span> confidence lower and upper
 bounds for <span class="math inline">\(n^+\)</span> by using the
-adaptive partitioning procedure with adaptive Simes local tests:</p>
+adaptive partitioning procedure with Simes local tests:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nplus)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nplus_bound</span>(p_right_tail, <span class="at">alpha=</span><span class="fl">0.05</span>, <span class="at">method=</span><span class="st">&quot;ASimes&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nplus_bound</span>(p_right_tail, <span class="at">alpha=</span><span class="fl">0.05</span>, <span class="at">method=</span><span class="st">&quot;Simes&quot;</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $lo</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
@@ -540,7 +540,7 @@ adaptive partitioning procedure with adaptive Simes local tests:</p>
 <p>Index set of identified positive parameters (i.e. <span class="math inline">\(i:\theta_i &gt;0\)</span>) and nonpositive
 parameters (<span class="math inline">\(i:\theta_i \leq 0\)</span>) with
 familywise error rate control at level <span class="math inline">\(\alpha\)</span>:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nplus_fwer</span>(p_right_tail, <span class="at">alpha=</span><span class="fl">0.05</span>, <span class="at">method=</span><span class="st">&quot;ASimes&quot;</span>)</span>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nplus_fwer</span>(p_right_tail, <span class="at">alpha=</span><span class="fl">0.05</span>, <span class="at">method=</span><span class="st">&quot;Simes&quot;</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $positive</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; integer(0)</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>

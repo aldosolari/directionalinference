@@ -123,13 +123,13 @@ powset <- function(set) {
 }
 ```
 
-Function to compute the $p$-value of the adaptive Simes local test:
+Function to compute the $p$-value of the Simes local test:
 
 ```{r}
-p_combi_test <- function(x) { ifelse(min(x)<=0.5, ifelse(length(x) < 3, 1, (sum(x>.5)+1)/(length(x)*0.5) ) * min(sort(x)*length(x)/(1:length(x))),1)  }
+p_combi_test <- function(x) {  min(sort(x)*length(x)/(1:length(x)))  }
 ```
 
-Computing the $p$-value for each intersection hypothesis by using the adaptive Simes local test:
+Computing the $p$-value for each intersection hypothesis by using the Simes local test:
 
 ```{r, message=F, warning=F, error=F, comment=NA}
 res = round(unlist(
@@ -165,14 +165,14 @@ res_part
 
 
 
-$95\%$ confidence lower and upper bounds for $n^+$ by using the adaptive partitioning procedure with adaptive Simes local tests:
+$95\%$ confidence lower and upper bounds for $n^+$ by using the adaptive partitioning procedure with Simes local tests:
 ```{r}
 library(nplus)
-nplus_bound(p_right_tail, alpha=0.05, method="ASimes")
+nplus_bound(p_right_tail, alpha=0.05, method="Simes")
 ```
 Index set of identified positive parameters (i.e. $i:\theta_i >0$) and nonpositive parameters ($i:\theta_i \leq 0$) with familywise error rate control at level $\alpha$:
 ```{r}
-nplus_fwer(p_right_tail, alpha=0.05, method="ASimes")
+nplus_fwer(p_right_tail, alpha=0.05, method="Simes")
 ```
 
 Gail, M. and Simon, R. (1985). Testing for qualitative interactions between treatment
