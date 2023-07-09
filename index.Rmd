@@ -29,62 +29,57 @@ devtools::install_github("aldosolari/nplus")
 ## Introduction
 
 We consider the problem of inference on the signs of $n>1$ parameters. 
-Let $\theta = (\theta_1,\ldots,\theta_n)$ be a vector of $n$ unknown real-valued parameters. For any $I\subseteq \{1,\ldots,n\}$, let $n^+(I)$ and  $n^-(I)$ be the number of parameters $\theta_i$, $i \in I$ with positive value and negative values, respectively:
+Let $\theta = (\theta_1,\ldots,\theta_n)$ be a vector of $n$ unknown real-valued parameters. For any $I\subseteq \{1,\ldots,n\}$, let $n^+(I)$ and  $n^-(I)$ be the number of parameters $\theta_i$, $i \in I$ with positive values and negative values, respectively:
+$$n^+(I) = |\{ i \in I : \theta_i > 0 \}|, \quad n^-(I) = |\{ i \in I : \theta_i < 0 \}|.
 $$
-n^+(I) = |\{ i \in I : \theta_i > 0 \}|, \quad n^-(I) = |\{ i \in I : \theta_i < 0 \}|.
+For simplicity of notation, we use $n^+$ and $n^-$ instead of $n^+(\{1,\ldots,n\})$ and  $n^-(\{1,\ldots,n\})$.
+
+Our first goal is to provide lower bounds $\ell_{\alpha}^{+}(I)$ and $\ell_{\alpha}^{-}(I)$  for  $n^+(I)$ and  $n^-(I)$ such that 
 $$
-Simultaneous inference on $n^+(I)$ and $n^-(I)$ can be obtained by selecting one hypothesis within each pair of one-sided hypotheses
+\mathrm{pr}_{\theta}\Big(
+n^{+}(I) 
+\geq 
+\ell_{\alpha}^{+}(I),\,\,
+n^{-}(I) 
+\geq 
+\ell_{\alpha}^{-}(I),
+ \mathrm{\,\,for\,\,all\,\,}I  \Big) \geq 1- \alpha.
+$$
+It is worth noting that once we have obtained the confidence lower bounds on the number of positive and negative parameters, we can automatically derive the corresponding upper bounds, i.e. if $n^{+}(I) \geq \ell_\alpha^+(I), n^{-}(I) \geq \ell_\alpha^-(I)$ holds, then also $n^{+}(I) \leq  |I| - \ell^-_\alpha(I), n^{-}_\alpha(I) \leq |I| - \ell^{+}_\alpha(I)$ holds.  
+
+For finding $\ell_{\alpha}^{+}(I)$ and $\ell_{\alpha}^{-}(I)$, we use the *directional closed testing* (DCT) procedure: first, 
+select from each pair 
 $$
  H_i^-: \theta_i \leq 0, \qquad
  H_i^+: \theta_i \geq 0.
 $$
-where we have right-sided $p$-values $p_i$ for $H_i^-$ and left-sided $p$-values $q_i=1 - p_i$ for $H_i^+$. We select $H_i^-$ if $p_i \leq 1/2$ and $H_i^+$ if $p_i > 1/2$. We denote by $S$ the vector of signs that we condition on: $$S = (sign(p_1-1/2), \ldots, sign(p_n-1/2)), \quad
- sign(p_i-1/2)  =
-\begin{cases}
--1 & \text{if } p_i \leq 1/2, \\
-1 & \text{if } p_i > 1/2.
-\end{cases}
-$$
-The *directional closed testing procedure* provides $(1-\alpha)$ confidence bounds $l^+(I)$ and $u^+(I)$ for $n^+(I)$ and confidence bounds $l^-(I)$ and $u^-(I)$ for $n^-(I)$ hat are simultaneous
-for all $I$:
-$$
-\mathrm{P}_{\theta}\Big(
-l_{\alpha}^{+}(I)
-\leq 
-n^{+}(I) 
-\leq 
-u_{\alpha}^{+}(I),\,\,
-l_{\alpha}^{-}(I)
-\leq 
-n^{-}(I) 
-\leq 
-u_{\alpha}^{-}(I),
- \mathrm{\,\,for\,\,all\,\,}I \mid  S \Big) \geq 1-\alpha.
-$$
-If one is interested only in inference on $n^+(I)$, consider the $n$ pairs
-$$
- H_i^-: \theta_i \leq 0, \qquad
- K_i: \theta_i > 0.
-$$
-where $H_i^+$ is modified by removing the equality sign, and thus exactly one of the hypothesis pair $(H_i^-, K_i)$ is true. 
-By using this formulation, the *adaptive partitioning procedure* provides
-bounds for $n^+(I)$ that are uniformly better than those of directional closed testing:
-$$
-\mathrm{P}_{\theta}\Big(
-l_{\alpha}^{+}(I)
-\leq 
-n^{+}(I) 
-\leq 
-u_{\alpha}^{+}(I)
- \mathrm{\,\,for\,\,all\,\,}I \mid S \Big) \geq 1- \alpha.
-$$
 
-## An example: PFT therapy for breast cancer
+the hypothesis to test. Let $p_i$ and $q_i=1-p_i$ be the  $p$-values for $H_i^-$ and $H_i^+$, respectively. We select $H_i^-$ if $p_i \leq 1/2$ and $H_i^+$ if $p_i > 1/2$.  
 
-The data analysed in Gail and Simon (1985) consists of the
-difference in the proportion of patients that are disease free with the PFT treatment versus
-with the FT treatment, in $n = 4$ subgroups defined by age and progesterone receptor levels  ($i = 1$: Age < 50, PR
-< 10; $i = 2$: Age ≥ 50, PR < 10; $i = 3$: Age < 50, PR ≥ 10; $i = 4$: Age ≥ 50, PR ≥ 10).
+Second, on the selected $n$ one-sided
+hypotheses, apply the closed testing procedure at level $\alpha$. 
+Of course, the second step has to
+take care to adjust for the first step of selection from the same data. 
+
+
+In some settings it is enough to infer on positive and non-positive findings, i.e., the interest is only in lower bounds on $n^+(I)$ and on $n^-(I)+n^0( I)$, where $n^0( I) = | I|-n^+(I)-n^-(I) = |i\in I: \theta_i = 0|$.
+Thus we would like to provide lower bounds $\bar{\ell}_{\alpha}^{+}(I)$ and $\bar{\ell}_{\alpha}^{-}(I)$  for  $n^+(I)$ and  $n^-(I)+n^0(I)$ such that
+$$
+  \mathrm{pr}_{\theta}\Big(
+n^{+}(I) 
+\geq 
+\bar{\ell}_{\alpha}^{+}(I),\,\,
+n^{-}(I)+n^{0}(I) 
+\geq 
+\bar{\ell}_{\alpha}^{-}(I),
+ \mathrm{\,\,for\,\,all\,\,}I  \Big) \geq 1- \alpha.$$
+For finding $\bar{\ell}_{\alpha}^+(I)$ and $\bar{\ell}_{\alpha}^-(I)$ we use the *partitioning principle* to the $2^n$ orthants defined by $\theta_i \in \{\theta_i\leq 0, \theta_i>0\}, i=1,\ldots, n$. It turns out that the bounds obtained through the partitioning principle with *adaptive tests* uniformly improves upon the DCT bounds:
+$\bar{\ell}_{\alpha}^{+}(I)\geq \ell_{\alpha}^{+}(I)$, $\bar{\ell}_{\alpha}^{-}(I)\geq \ell_{\alpha}^{-}(I)$. 
+
+## Subgroup Analysis
+
+The data analysed in Gail and Simon (1985) consists of the difference in disease-free survival probabilities at 3 years for breast cancer patients who underwent a PFT treatment compared to those who received a PF treatment. The study includes a total of 1260 patients divided in $n=4$ subgroups, classified based on age and progesterone receptor levels. Table 2 in Gail and Simon
+(1985) reports for each subgroup the difference $d_i$ and the corresponding standard error $s_i$.
 
 ```{r}
 d_i = c(.163, -.114, -.047, -.151)
@@ -92,22 +87,14 @@ s_i = c(.0788, .0689, .0614, .0547)
 p_right_tail = 1-pnorm(d_i/s_i)
 ```
 
-The following Table provides for each subgroup the difference, standard error, and right-tailed $p$-value.
-
-```{r, echo=FALSE, results='asis'}
-tab_df = data.frame(rbind(d_i, s_i, p_right_tail))
-colnames(tab_df) <- paste("i =",1:4)
-rownames(tab_df) <- c("difference", "standard error", "right-tail p-value")
-knitr::kable(tab_df, digits = 3)
-```
-
+The right-sided $p$-value for $H_i^-$ is calculated using the large-sample normal approximation. 
 Based on the right-sided $p$-values, we select the hypotheses $H_1^-$, $H_2^+$, $H_3^+$, $H_4^+$ and we adjust for the selection the corresponding $p$-values:
 
 ```{r}
 n = length(p_right_tail)
 S = rep("+",n)
 S[p_right_tail <= 0.5] <- "-" 
-hyp_selected <- paste0(1:n,S)
+hyp_selected <- paste0("H",paste0(1:n,S))
 p_selected <- 2*pmin(p_right_tail, 1-p_right_tail)
 names(p_selected) <- hyp_selected
 p_selected
@@ -139,7 +126,7 @@ names(res) <- powset(hyp_selected)
 res
 ```
 
-Closed testing adjustment:
+Adjusted $p$-values by closed testing:
 ```{r}
 res_ct = res
 closure = powset(1:n)
@@ -149,7 +136,7 @@ res_ct
 ```
 
 
-Partitioning hypotheses:
+Partitioning procedure with adaptive tests:
 ```{r}
 Sc = rep("-",n)
 Sc[p_right_tail <= 0.5] <- "+" 
@@ -165,18 +152,24 @@ res_part
 
 
 
-$95\%$ confidence lower and upper bounds for $n^+$ by using the adaptive partitioning procedure with Simes local tests:
+$95\%$ confidence lower and upper bounds $\bar{\ell}_{\alpha}^{+}$ and $n - \bar{\ell}_{\alpha}^{-}$ for $n^+$  by using the partitioning procedure with adaptive Simes' tests:
 ```{r}
 library(nplus)
 nplus_bound(p_right_tail, alpha=0.05, method="Simes")
 ```
-Index set of identified positive parameters (i.e. $i:\theta_i >0$) and nonpositive parameters ($i:\theta_i \leq 0$) with familywise error rate control at level $\alpha$:
+Index set of positive discoveries (i.e. $i:\theta_i >0$) and non-positive discoveries ($i:\theta_i \leq 0$) with familywise error rate control at level $\alpha$:
 ```{r}
 nplus_fwer(p_right_tail, alpha=0.05, method="Simes")
 ```
 
 Gail, M. and Simon, R. (1985). Testing for qualitative interactions between treatment
 effects and patient subsets. Biometrics, pages 361–372.
+
+## Testing for qualitative interactions with follow-up inference
+
+If testing for mixed signs of the parameter vector $\theta$ is of primary concern, DCT is applied only if the hypothesis of no qualitative interaction, $H_0: \{n^+=0 \}\cup \{n^-=0\},$  is rejected.   
+
+TBC
 
 ## Enhancing meta-analysis
 
@@ -204,7 +197,7 @@ Adaptive partitioning procedure: $95\%$ confidence lower and upper bounds on the
 
 ```{r}
 RES = matrix(NA, ncol=7, nrow=4)
-RES[,1] = c("Fisher","Simes","ASimes","ALRT")
+RES[,1] = c("Fisher","Simes","mSimes","ALRT")
 colnames(RES) <- c("Local test", "lo+","up+","id+", "lo-","up-","id-")
 for (i in 1:4){
  res_bound <- nplus_bound(p_right_tail, method=RES[i,1])
@@ -218,64 +211,30 @@ for (i in 1:4){
 }
 RES
 ```
-Adaptive partitioning procedure: $95\%$ confidence lower and upper bounds on the number of studies with positive effect in the (data-driven) top $k$ schools with the Fisher's combining function:
-
-```{r}
-ix_best <- sort(pmin(p_right_tail,1-p_right_tail), index.return=TRUE)$ix
-bestk <- sapply(1:n, function(i) 
-  range(which( nplus_pvalue(p_right_tail, method = "Fisher", ix = ix_best[1:i]) > 0.05)) -1
-)
-plot(asp=1, type="s", ylim=c(0,n),xlim=c(1,n),
-     bestk[2,], xlab="k", ylab="95% CI for the top k schools")
-lines(bestk[1,],type="s")
-abline(h=0)
-abline(a=0,b=1)
-abline(v=n)
-for  (i in 1:n){
-  segments(x0=i,x1=i,y0=bestk[1,i], y1=bestk[2,i])
-}
-```
 
 
 
-Directional closed testing procedure: $95\%$ confidence lower and upper bounds on the number of studies with positive/negative effect (`lo+ `/`lo- `  and `up+ `/`up- `) and corresponding number of discoveries (`id+ `/`id- `) for different combining functions: Fisher and Simes:
 
-```{r, results='hide', message=F, warning=F, error=F, comment=NA}
-require("hommel") || install.packages("hommel")
-require("sumSome") || install.packages("sumSome")
-```
+Directional closed testing procedure: $95\%$ confidence lower and upper bounds on the number of studies with positive/negative effect (`lo+ `/`lo- `  and `up+ `/`up- `) and corresponding number of discoveries (`id+ `/`id- `) for different combining functions.
 
 ```{r}
 S_minus = which(p_right_tail <= 0.5)
 S_plus = which(p_right_tail > 0.5)
-p_twotail = 2*pmin(p_right_tail, 1-p_right_tail)
-RES_CT = matrix(NA, ncol=7, nrow=2)
-RES_CT[,1] = c("Fisher","Simes")
-colnames(RES_CT) <- c("Local test", "lo+","up+","id+", "lo-","up-","id-")
-l_plus_sumsome = sumSome::discoveries(sumPvalsPar(g=p_twotail, S = S_minus, type = "Fisher", independence = TRUE))
-l_minus_sumsome = sumSome::discoveries(sumPvalsPar(g=p_twotail, S = S_plus, type = "Fisher", independence = TRUE))
-RES_CT[1,2]<-l_plus_sumsome
-RES_CT[1,3]<-n-l_minus_sumsome
-RES_CT[1,5]<-l_minus_sumsome
-RES_CT[1,6]<-n-l_plus_sumsome
-ix_plus <- sort(p_right_tail, index.return=TRUE)$ix
-RES_CT[1,4] <- ifelse(l_plus_sumsome > 0, sum(sapply(1:l_plus_sumsome, function(i)
-  sumPvalsPar(g=p_twotail, S=ix_plus[1:i], type = "Fisher", independence = TRUE)$TD) == 1:l_plus_sumsome),
-  0)
-ix_minus <- sort(1-p_right_tail, index.return=TRUE)$ix
-RES_CT[1,7]<- ifelse(l_minus_sumsome>0, sum(sapply(1:l_minus_sumsome, function(i)
-  sumPvalsPar(g=p_twotail, S=ix_minus[1:i], type = "Fisher", independence = TRUE)$TD) == 1:l_minus_sumsome),
-  0)
-res_hommel <- hommel(p_twotail)
-l_plus_hommel = hommel::discoveries(res_hommel, ix = S_minus)
-l_minus_hommel = hommel::discoveries(res_hommel, ix = S_plus)
-RES_CT[2,2]<-l_plus_hommel
-RES_CT[2,3]<-n-l_minus_hommel
-RES_CT[2,4]<-sum(res_hommel@adjusted[S_minus] <= 0.05)
-RES_CT[2,5]<-l_minus_hommel
-RES_CT[2,6]<-n-l_plus_hommel
-RES_CT[2,7]<-sum(res_hommel@adjusted[S_plus] <= 0.05)
-RES_CT
+RES_DCT = matrix(NA, ncol=7, nrow=4)
+RES_DCT[,1] = c("Fisher","Simes","mSimes","ALRT")
+colnames(RES_DCT) <- c("Local test", "lo+","up+","id+", "lo-","up-","id-")
+for (i in 1:4){
+ res_lo <- min(which(nplus_pvalue(p_right_tail, method=RES_DCT[i,1], ix = S_minus) > 0.05))-1 
+  res_up <- n -  min(which(nplus_pvalue(p_right_tail, method=RES_DCT[i,1], ix = S_plus) > 0.05)) + 1 
+ res_id <- nplus_fwer(p_right_tail, method=RES_DCT[i,1])
+ RES_DCT[i,2] <- res_lo
+ RES_DCT[i,3] <- n - res_up
+ RES_DCT[i,4] <- length(res_id$positive)
+ RES_DCT[i,5] <- res_up
+ RES_DCT[i,6] <- n - res_lo
+ RES_DCT[i,7] <- length(res_id$nonpositive)
+}
+RES_DCT
 ```
 
 Discoveries by Guo and Romano (2015) procedure with FWER control at 0.05 level:

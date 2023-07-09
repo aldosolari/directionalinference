@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2023-05-29" />
+<meta name="date" content="2023-07-09" />
 
 <title>Simultaneous Directional Inference</title>
 
@@ -331,7 +331,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Simultaneous Directional Inference</h1>
-<h4 class="date">2023-05-29</h4>
+<h4 class="date">2023-07-09</h4>
 
 
 
@@ -350,113 +350,83 @@ vector of <span class="math inline">\(n\)</span> unknown real-valued
 parameters. For any <span class="math inline">\(I\subseteq
 \{1,\ldots,n\}\)</span>, let <span class="math inline">\(n^+(I)\)</span>
 and <span class="math inline">\(n^-(I)\)</span> be the number of
-parameters <span class="math inline">\(\theta_i\)</span>, <span class="math inline">\(i \in I\)</span> with positive value and negative
-values, respectively: <span class="math display">\[
-n^+(I) = |\{ i \in I : \theta_i &gt; 0 \}|, \quad n^-(I) = |\{ i \in I :
-\theta_i &lt; 0 \}|.
-\]</span> Simultaneous inference on <span class="math inline">\(n^+(I)\)</span> and <span class="math inline">\(n^-(I)\)</span> can be obtained by selecting one
-hypothesis within each pair of one-sided hypotheses <span class="math display">\[
+parameters <span class="math inline">\(\theta_i\)</span>, <span class="math inline">\(i \in I\)</span> with positive values and negative
+values, respectively: <span class="math display">\[n^+(I) = |\{ i \in I
+: \theta_i &gt; 0 \}|, \quad n^-(I) = |\{ i \in I : \theta_i &lt; 0 \}|.
+\]</span> For simplicity of notation, we use <span class="math inline">\(n^+\)</span> and <span class="math inline">\(n^-\)</span> instead of <span class="math inline">\(n^+(\{1,\ldots,n\})\)</span> and <span class="math inline">\(n^-(\{1,\ldots,n\})\)</span>.</p>
+<p>Our first goal is to provide lower bounds <span class="math inline">\(\ell_{\alpha}^{+}(I)\)</span> and <span class="math inline">\(\ell_{\alpha}^{-}(I)\)</span> for <span class="math inline">\(n^+(I)\)</span> and <span class="math inline">\(n^-(I)\)</span> such that <span class="math display">\[
+\mathrm{pr}_{\theta}\Big(
+n^{+}(I)
+\geq
+\ell_{\alpha}^{+}(I),\,\,
+n^{-}(I)
+\geq
+\ell_{\alpha}^{-}(I),
+\mathrm{\,\,for\,\,all\,\,}I  \Big) \geq 1- \alpha.
+\]</span> It is worth noting that once we have obtained the confidence
+lower bounds on the number of positive and negative parameters, we can
+automatically derive the corresponding upper bounds, i.e. if <span class="math inline">\(n^{+}(I) \geq \ell_\alpha^+(I), n^{-}(I) \geq
+\ell_\alpha^-(I)\)</span> holds, then also <span class="math inline">\(n^{+}(I) \leq |I| - \ell^-_\alpha(I),
+n^{-}_\alpha(I) \leq |I| - \ell^{+}_\alpha(I)\)</span> holds.</p>
+<p>For finding <span class="math inline">\(\ell_{\alpha}^{+}(I)\)</span>
+and <span class="math inline">\(\ell_{\alpha}^{-}(I)\)</span>, we use
+the <em>directional closed testing</em> (DCT) procedure: first, select
+from each pair <span class="math display">\[
 H_i^-: \theta_i \leq 0, \qquad
 H_i^+: \theta_i \geq 0.
-\]</span> where we have right-sided <span class="math inline">\(p\)</span>-values <span class="math inline">\(p_i\)</span> for <span class="math inline">\(H_i^-\)</span> and left-sided <span class="math inline">\(p\)</span>-values <span class="math inline">\(q_i=1 - p_i\)</span> for <span class="math inline">\(H_i^+\)</span>. We select <span class="math inline">\(H_i^-\)</span> if <span class="math inline">\(p_i
-\leq 1/2\)</span> and <span class="math inline">\(H_i^+\)</span> if
-<span class="math inline">\(p_i &gt; 1/2\)</span>. We denote by <span class="math inline">\(S\)</span> the vector of signs that we condition
-on: <span class="math display">\[S = (sign(p_1-1/2), \ldots,
-sign(p_n-1/2)), \quad
-sign(p_i-1/2)  =
-\begin{cases}
--1 &amp; \text{if } p_i \leq 1/2, \\
-1 &amp; \text{if } p_i &gt; 1/2.
-\end{cases}
-\]</span> The <em>directional closed testing procedure</em> provides
-<span class="math inline">\((1-\alpha)\)</span> confidence bounds <span class="math inline">\(l^+(I)\)</span> and <span class="math inline">\(u^+(I)\)</span> for <span class="math inline">\(n^+(I)\)</span> and confidence bounds <span class="math inline">\(l^-(I)\)</span> and <span class="math inline">\(u^-(I)\)</span> for <span class="math inline">\(n^-(I)\)</span> hat are simultaneous for all <span class="math inline">\(I\)</span>: <span class="math display">\[
-\mathrm{P}_{\theta}\Big(
-l_{\alpha}^{+}(I)
-\leq
-n^{+}(I)
-\leq
-u_{\alpha}^{+}(I),\,\,
-l_{\alpha}^{-}(I)
-\leq
-n^{-}(I)
-\leq
-u_{\alpha}^{-}(I),
-\mathrm{\,\,for\,\,all\,\,}I \mid  S \Big) \geq 1-\alpha.
-\]</span> If one is interested only in inference on <span class="math inline">\(n^+(I)\)</span>, consider the <span class="math inline">\(n\)</span> pairs <span class="math display">\[
-H_i^-: \theta_i \leq 0, \qquad
-K_i: \theta_i &gt; 0.
-\]</span> where <span class="math inline">\(H_i^+\)</span> is modified
-by removing the equality sign, and thus exactly one of the hypothesis
-pair <span class="math inline">\((H_i^-, K_i)\)</span> is true. By using
-this formulation, the <em>adaptive partitioning procedure</em> provides
-bounds for <span class="math inline">\(n^+(I)\)</span> that are
-uniformly better than those of directional closed testing: <span class="math display">\[
-\mathrm{P}_{\theta}\Big(
-l_{\alpha}^{+}(I)
-\leq
-n^{+}(I)
-\leq
-u_{\alpha}^{+}(I)
-\mathrm{\,\,for\,\,all\,\,}I \mid S \Big) \geq 1- \alpha.
 \]</span></p>
+<p>the hypothesis to test. Let <span class="math inline">\(p_i\)</span>
+and <span class="math inline">\(q_i=1-p_i\)</span> be the <span class="math inline">\(p\)</span>-values for <span class="math inline">\(H_i^-\)</span> and <span class="math inline">\(H_i^+\)</span>, respectively. We select <span class="math inline">\(H_i^-\)</span> if <span class="math inline">\(p_i
+\leq 1/2\)</span> and <span class="math inline">\(H_i^+\)</span> if
+<span class="math inline">\(p_i &gt; 1/2\)</span>.</p>
+<p>Second, on the selected <span class="math inline">\(n\)</span>
+one-sided hypotheses, apply the closed testing procedure at level <span class="math inline">\(\alpha\)</span>. Of course, the second step has to
+take care to adjust for the first step of selection from the same
+data.</p>
+<p>In some settings it is enough to infer on positive and non-positive
+findings, i.e., the interest is only in lower bounds on <span class="math inline">\(n^+(I)\)</span> and on <span class="math inline">\(n^-(I)+n^0( I)\)</span>, where <span class="math inline">\(n^0( I) = | I|-n^+(I)-n^-(I) = |i\in I: \theta_i =
+0|\)</span>. Thus we would like to provide lower bounds <span class="math inline">\(\bar{\ell}_{\alpha}^{+}(I)\)</span> and <span class="math inline">\(\bar{\ell}_{\alpha}^{-}(I)\)</span> for <span class="math inline">\(n^+(I)\)</span> and <span class="math inline">\(n^-(I)+n^0(I)\)</span> such that <span class="math display">\[
+  \mathrm{pr}_{\theta}\Big(
+n^{+}(I)
+\geq
+\bar{\ell}_{\alpha}^{+}(I),\,\,
+n^{-}(I)+n^{0}(I)
+\geq
+\bar{\ell}_{\alpha}^{-}(I),
+\mathrm{\,\,for\,\,all\,\,}I  \Big) \geq 1- \alpha.\]</span> For finding
+<span class="math inline">\(\bar{\ell}_{\alpha}^+(I)\)</span> and <span class="math inline">\(\bar{\ell}_{\alpha}^-(I)\)</span> we use the
+<em>partitioning principle</em> to the <span class="math inline">\(2^n\)</span> orthants defined by <span class="math inline">\(\theta_i \in \{\theta_i\leq 0, \theta_i&gt;0\},
+i=1,\ldots, n\)</span>. It turns out that the bounds obtained through
+the partitioning principle with <em>adaptive tests</em> uniformly
+improves upon the DCT bounds: <span class="math inline">\(\bar{\ell}_{\alpha}^{+}(I)\geq
+\ell_{\alpha}^{+}(I)\)</span>, <span class="math inline">\(\bar{\ell}_{\alpha}^{-}(I)\geq
+\ell_{\alpha}^{-}(I)\)</span>.</p>
 </div>
-<div id="an-example-pft-therapy-for-breast-cancer" class="section level2">
-<h2>An example: PFT therapy for breast cancer</h2>
+<div id="subgroup-analysis" class="section level2">
+<h2>Subgroup Analysis</h2>
 <p>The data analysed in Gail and Simon (1985) consists of the difference
-in the proportion of patients that are disease free with the PFT
-treatment versus with the FT treatment, in <span class="math inline">\(n
-= 4\)</span> subgroups defined by age and progesterone receptor levels
-(<span class="math inline">\(i = 1\)</span>: Age &lt; 50, PR &lt; 10;
-<span class="math inline">\(i = 2\)</span>: Age ≥ 50, PR &lt; 10; <span class="math inline">\(i = 3\)</span>: Age &lt; 50, PR ≥ 10; <span class="math inline">\(i = 4\)</span>: Age ≥ 50, PR ≥ 10).</p>
+in disease-free survival probabilities at 3 years for breast cancer
+patients who underwent a PFT treatment compared to those who received a
+PF treatment. The study includes a total of 1260 patients divided in
+<span class="math inline">\(n=4\)</span> subgroups, classified based on
+age and progesterone receptor levels. Table 2 in Gail and Simon (1985)
+reports for each subgroup the difference <span class="math inline">\(d_i\)</span> and the corresponding standard error
+<span class="math inline">\(s_i\)</span>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>d_i <span class="ot">=</span> <span class="fu">c</span>(.<span class="dv">163</span>, <span class="sc">-</span>.<span class="dv">114</span>, <span class="sc">-</span>.<span class="dv">047</span>, <span class="sc">-</span>.<span class="dv">151</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>s_i <span class="ot">=</span> <span class="fu">c</span>(.<span class="dv">0788</span>, .<span class="dv">0689</span>, .<span class="dv">0614</span>, .<span class="dv">0547</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>p_right_tail <span class="ot">=</span> <span class="dv">1</span><span class="sc">-</span><span class="fu">pnorm</span>(d_i<span class="sc">/</span>s_i)</span></code></pre></div>
-<p>The following Table provides for each subgroup the difference,
-standard error, and right-tailed <span class="math inline">\(p\)</span>-value.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">i = 1</th>
-<th align="right">i = 2</th>
-<th align="right">i = 3</th>
-<th align="right">i = 4</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">difference</td>
-<td align="right">0.163</td>
-<td align="right">-0.114</td>
-<td align="right">-0.047</td>
-<td align="right">-0.151</td>
-</tr>
-<tr class="even">
-<td align="left">standard error</td>
-<td align="right">0.079</td>
-<td align="right">0.069</td>
-<td align="right">0.061</td>
-<td align="right">0.055</td>
-</tr>
-<tr class="odd">
-<td align="left">right-tail p-value</td>
-<td align="right">0.019</td>
-<td align="right">0.951</td>
-<td align="right">0.778</td>
-<td align="right">0.997</td>
-</tr>
-</tbody>
-</table>
-<p>Based on the right-sided <span class="math inline">\(p\)</span>-values, we select the hypotheses <span class="math inline">\(H_1^-\)</span>, <span class="math inline">\(H_2^+\)</span>, <span class="math inline">\(H_3^+\)</span>, <span class="math inline">\(H_4^+\)</span> and we adjust for the selection the
+<p>The right-sided <span class="math inline">\(p\)</span>-value for
+<span class="math inline">\(H_i^-\)</span> is calculated using the
+large-sample normal approximation. Based on the right-sided <span class="math inline">\(p\)</span>-values, we select the hypotheses <span class="math inline">\(H_1^-\)</span>, <span class="math inline">\(H_2^+\)</span>, <span class="math inline">\(H_3^+\)</span>, <span class="math inline">\(H_4^+\)</span> and we adjust for the selection the
 corresponding <span class="math inline">\(p\)</span>-values:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">length</span>(p_right_tail)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>S <span class="ot">=</span> <span class="fu">rep</span>(<span class="st">&quot;+&quot;</span>,n)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>S[p_right_tail <span class="sc">&lt;=</span> <span class="fl">0.5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;-&quot;</span> </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>hyp_selected <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="dv">1</span><span class="sc">:</span>n,S)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>hyp_selected <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;H&quot;</span>,<span class="fu">paste0</span>(<span class="dv">1</span><span class="sc">:</span>n,S))</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>p_selected <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">pmin</span>(p_right_tail, <span class="dv">1</span><span class="sc">-</span>p_right_tail)</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(p_selected) <span class="ot">&lt;-</span> hyp_selected</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>p_selected</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          1-          2+          3+          4+ </span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         H1-         H2+         H3+         H4+ </span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.038590408 0.098011379 0.443990347 0.005771086</span></span></code></pre></div>
 <p>Function to compute the power set of a set:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>powset <span class="ot">&lt;-</span> <span class="cf">function</span>(set) { </span>
@@ -474,37 +444,46 @@ intersection hypothesis by using the Simes local test:</p>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>),<span class="dv">4</span>)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(res) <span class="ot">&lt;-</span> <span class="fu">powset</span>(hyp_selected)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>res</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">character</span>(<span class="dv">0</span>)                        <span class="dv">1</span><span class="sc">-</span>                        <span class="dv">2</span><span class="sc">+</span> </span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                      <span class="cn">Inf</span>                    <span class="fl">0.0386</span>                    <span class="fl">0.0980</span> </span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;2+&quot;</span>)                        <span class="dv">3</span><span class="sc">+</span>             <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;3+&quot;</span>) </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0772</span>                    <span class="fl">0.4440</span>                    <span class="fl">0.0772</span> </span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;2+&quot;</span>, <span class="st">&quot;3+&quot;</span>)       <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;2+&quot;</span>, <span class="st">&quot;3+&quot;</span>)                        <span class="dv">4</span><span class="sc">+</span> </span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.1960</span>                    <span class="fl">0.1158</span>                    <span class="fl">0.0058</span> </span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;4+&quot;</span>)             <span class="fu">c</span>(<span class="st">&quot;2+&quot;</span>, <span class="st">&quot;4+&quot;</span>)       <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;2+&quot;</span>, <span class="st">&quot;4+&quot;</span>) </span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0115</span>                    <span class="fl">0.0115</span>                    <span class="fl">0.0173</span> </span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;3+&quot;</span>, <span class="st">&quot;4+&quot;</span>)       <span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;3+&quot;</span>, <span class="st">&quot;4+&quot;</span>)       <span class="fu">c</span>(<span class="st">&quot;2+&quot;</span>, <span class="st">&quot;3+&quot;</span>, <span class="st">&quot;4+&quot;</span>) </span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0115</span>                    <span class="fl">0.0173</span>                    <span class="fl">0.0173</span> </span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">&quot;1-&quot;</span>, <span class="st">&quot;2+&quot;</span>, <span class="st">&quot;3+&quot;</span>, <span class="st">&quot;4+&quot;</span>) </span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">0.0231</span> </span></code></pre></div>
-<p>Closed testing adjustment:</p>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">character</span>(<span class="dv">0</span>)                           H1<span class="sc">-</span> </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                          <span class="cn">Inf</span>                        <span class="fl">0.0386</span> </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                          H2<span class="sc">+</span>               <span class="fu">c</span>(<span class="st">&quot;H1-&quot;</span>, <span class="st">&quot;H2+&quot;</span>) </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                       <span class="fl">0.0980</span>                        <span class="fl">0.0772</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                          H3<span class="sc">+</span>               <span class="fu">c</span>(<span class="st">&quot;H1-&quot;</span>, <span class="st">&quot;H3+&quot;</span>) </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                       <span class="fl">0.4440</span>                        <span class="fl">0.0772</span> </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="st">&quot;H2+&quot;</span>, <span class="st">&quot;H3+&quot;</span>)        <span class="fu">c</span>(<span class="st">&quot;H1-&quot;</span>, <span class="st">&quot;H2+&quot;</span>, <span class="st">&quot;H3+&quot;</span>) </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                       <span class="fl">0.1960</span>                        <span class="fl">0.1158</span> </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                          H4<span class="sc">+</span>               <span class="fu">c</span>(<span class="st">&quot;H1-&quot;</span>, <span class="st">&quot;H4+&quot;</span>) </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                       <span class="fl">0.0058</span>                        <span class="fl">0.0115</span> </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="st">&quot;H2+&quot;</span>, <span class="st">&quot;H4+&quot;</span>)        <span class="fu">c</span>(<span class="st">&quot;H1-&quot;</span>, <span class="st">&quot;H2+&quot;</span>, <span class="st">&quot;H4+&quot;</span>) </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                       <span class="fl">0.0115</span>                        <span class="fl">0.0173</span> </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="st">&quot;H3+&quot;</span>, <span class="st">&quot;H4+&quot;</span>)        <span class="fu">c</span>(<span class="st">&quot;H1-&quot;</span>, <span class="st">&quot;H3+&quot;</span>, <span class="st">&quot;H4+&quot;</span>) </span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                       <span class="fl">0.0115</span>                        <span class="fl">0.0173</span> </span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>       <span class="fu">c</span>(<span class="st">&quot;H2+&quot;</span>, <span class="st">&quot;H3+&quot;</span>, <span class="st">&quot;H4+&quot;</span>) <span class="fu">c</span>(<span class="st">&quot;H1-&quot;</span>, <span class="st">&quot;H2+&quot;</span>, <span class="st">&quot;H3+&quot;</span>, <span class="st">&quot;H4+&quot;</span>) </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>                       <span class="fl">0.0173</span>                        <span class="fl">0.0231</span> </span></code></pre></div>
+<p>Adjusted <span class="math inline">\(p\)</span>-values by closed
+testing:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>res_ct <span class="ot">=</span> res</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>closure <span class="ot">=</span> <span class="fu">powset</span>(<span class="dv">1</span><span class="sc">:</span>n)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(closure))</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>res_ct[[k]] <span class="ot">=</span> <span class="fu">max</span>(res[<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(closure), <span class="cf">function</span>(i) <span class="fu">all</span>(closure[[k]] <span class="sc">%in%</span> closure[[i]]))]) </span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>res_ct</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              character(0)                        1-                        2+ </span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       Inf                    0.1158                    0.1960 </span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             c(&quot;1-&quot;, &quot;2+&quot;)                        3+             c(&quot;1-&quot;, &quot;3+&quot;) </span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.1158                    0.4440                    0.1158 </span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             c(&quot;2+&quot;, &quot;3+&quot;)       c(&quot;1-&quot;, &quot;2+&quot;, &quot;3+&quot;)                        4+ </span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.1960                    0.1158                    0.0231 </span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             c(&quot;1-&quot;, &quot;4+&quot;)             c(&quot;2+&quot;, &quot;4+&quot;)       c(&quot;1-&quot;, &quot;2+&quot;, &quot;4+&quot;) </span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0231                    0.0231                    0.0231 </span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             c(&quot;3+&quot;, &quot;4+&quot;)       c(&quot;1-&quot;, &quot;3+&quot;, &quot;4+&quot;)       c(&quot;2+&quot;, &quot;3+&quot;, &quot;4+&quot;) </span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0231                    0.0231                    0.0231 </span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(&quot;1-&quot;, &quot;2+&quot;, &quot;3+&quot;, &quot;4+&quot;) </span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    0.0231</span></span></code></pre></div>
-<p>Partitioning hypotheses:</p>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  character(0)                           H1- </span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                           Inf                        0.1158 </span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                           H2+               c(&quot;H1-&quot;, &quot;H2+&quot;) </span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        0.1960                        0.1158 </span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                           H3+               c(&quot;H1-&quot;, &quot;H3+&quot;) </span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        0.4440                        0.1158 </span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               c(&quot;H2+&quot;, &quot;H3+&quot;)        c(&quot;H1-&quot;, &quot;H2+&quot;, &quot;H3+&quot;) </span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        0.1960                        0.1158 </span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                           H4+               c(&quot;H1-&quot;, &quot;H4+&quot;) </span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        0.0231                        0.0231 </span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               c(&quot;H2+&quot;, &quot;H4+&quot;)        c(&quot;H1-&quot;, &quot;H2+&quot;, &quot;H4+&quot;) </span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        0.0231                        0.0231 </span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               c(&quot;H3+&quot;, &quot;H4+&quot;)        c(&quot;H1-&quot;, &quot;H3+&quot;, &quot;H4+&quot;) </span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        0.0231                        0.0231 </span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        c(&quot;H2+&quot;, &quot;H3+&quot;, &quot;H4+&quot;) c(&quot;H1-&quot;, &quot;H2+&quot;, &quot;H3+&quot;, &quot;H4+&quot;) </span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        0.0231                        0.0231</span></span></code></pre></div>
+<p>Partitioning procedure with adaptive tests:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Sc <span class="ot">=</span> <span class="fu">rep</span>(<span class="st">&quot;-&quot;</span>,n)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>Sc[p_right_tail <span class="sc">&lt;=</span> <span class="fl">0.5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;+&quot;</span> </span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>hyp_part <span class="ot">&lt;-</span> <span class="fu">powset</span>(<span class="dv">1</span><span class="sc">:</span>n)</span>
@@ -528,8 +507,10 @@ intersection hypothesis by using the Simes local test:</p>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c(&quot;-&quot;, &quot;+&quot;, &quot;+&quot;, &quot;+&quot;) </span></span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                0.0231</span></span></code></pre></div>
 <p><span class="math inline">\(95\%\)</span> confidence lower and upper
-bounds for <span class="math inline">\(n^+\)</span> by using the
-adaptive partitioning procedure with Simes local tests:</p>
+bounds <span class="math inline">\(\bar{\ell}_{\alpha}^{+}\)</span> and
+<span class="math inline">\(n - \bar{\ell}_{\alpha}^{-}\)</span> for
+<span class="math inline">\(n^+\)</span> by using the partitioning
+procedure with adaptive Simes’ tests:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nplus)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nplus_bound</span>(p_right_tail, <span class="at">alpha=</span><span class="fl">0.05</span>, <span class="at">method=</span><span class="st">&quot;Simes&quot;</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $lo</span></span>
@@ -537,9 +518,9 @@ adaptive partitioning procedure with Simes local tests:</p>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $up</span></span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 3</span></span></code></pre></div>
-<p>Index set of identified positive parameters (i.e. <span class="math inline">\(i:\theta_i &gt;0\)</span>) and nonpositive
-parameters (<span class="math inline">\(i:\theta_i \leq 0\)</span>) with
-familywise error rate control at level <span class="math inline">\(\alpha\)</span>:</p>
+<p>Index set of positive discoveries (i.e. <span class="math inline">\(i:\theta_i &gt;0\)</span>) and non-positive
+discoveries (<span class="math inline">\(i:\theta_i \leq 0\)</span>)
+with familywise error rate control at level <span class="math inline">\(\alpha\)</span>:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nplus_fwer</span>(p_right_tail, <span class="at">alpha=</span><span class="fl">0.05</span>, <span class="at">method=</span><span class="st">&quot;Simes&quot;</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $positive</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; integer(0)</span></span>
@@ -549,6 +530,13 @@ familywise error rate control at level <span class="math inline">\(\alpha\)</spa
 <p>Gail, M. and Simon, R. (1985). Testing for qualitative interactions
 between treatment effects and patient subsets. Biometrics, pages
 361–372.</p>
+</div>
+<div id="testing-for-qualitative-interactions-with-follow-up-inference" class="section level2">
+<h2>Testing for qualitative interactions with follow-up inference</h2>
+<p>If testing for mixed signs of the parameter vector <span class="math inline">\(\theta\)</span> is of primary concern, DCT is
+applied only if the hypothesis of no qualitative interaction, <span class="math inline">\(H_0: \{n^+=0 \}\cup \{n^-=0\},\)</span> is
+rejected.</p>
+<p>TBC</p>
 </div>
 <div id="enhancing-meta-analysis" class="section level2">
 <h2>Enhancing meta-analysis</h2>
@@ -577,7 +565,7 @@ the number of studies with positive/nonpositive effect
 discoveries (<code>id+</code>/<code>id-</code>) for different combining
 functions: Fisher, Simes, adaptive Simes and adaptive LRT:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>RES <span class="ot">=</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol=</span><span class="dv">7</span>, <span class="at">nrow=</span><span class="dv">4</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>RES[,<span class="dv">1</span>] <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Fisher&quot;</span>,<span class="st">&quot;Simes&quot;</span>,<span class="st">&quot;ASimes&quot;</span>,<span class="st">&quot;ALRT&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>RES[,<span class="dv">1</span>] <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Fisher&quot;</span>,<span class="st">&quot;Simes&quot;</span>,<span class="st">&quot;mSimes&quot;</span>,<span class="st">&quot;ALRT&quot;</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(RES) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Local test&quot;</span>, <span class="st">&quot;lo+&quot;</span>,<span class="st">&quot;up+&quot;</span>,<span class="st">&quot;id+&quot;</span>, <span class="st">&quot;lo-&quot;</span>,<span class="st">&quot;up-&quot;</span>,<span class="st">&quot;id-&quot;</span>)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>){</span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a> res_bound <span class="ot">&lt;-</span> <span class="fu">nplus_bound</span>(p_right_tail, <span class="at">method=</span>RES[i,<span class="dv">1</span>])</span>
@@ -593,87 +581,56 @@ functions: Fisher, Simes, adaptive Simes and adaptive LRT:</p>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Local test lo+  up+  id+ lo- up-  id-</span></span>
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] &quot;Fisher&quot;   &quot;10&quot; &quot;53&quot; &quot;4&quot; &quot;3&quot; &quot;46&quot; &quot;0&quot;</span></span>
 <span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] &quot;Simes&quot;    &quot;8&quot;  &quot;55&quot; &quot;8&quot; &quot;1&quot; &quot;48&quot; &quot;0&quot;</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] &quot;ASimes&quot;   &quot;8&quot;  &quot;54&quot; &quot;8&quot; &quot;2&quot; &quot;48&quot; &quot;0&quot;</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] &quot;mSimes&quot;   &quot;8&quot;  &quot;55&quot; &quot;8&quot; &quot;1&quot; &quot;48&quot; &quot;0&quot;</span></span>
 <span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4,] &quot;ALRT&quot;     &quot;11&quot; &quot;53&quot; &quot;5&quot; &quot;3&quot; &quot;45&quot; &quot;0&quot;</span></span></code></pre></div>
-<p>Adaptive partitioning procedure: <span class="math inline">\(95\%\)</span> confidence lower and upper bounds on
-the number of studies with positive effect in the (data-driven) top
-<span class="math inline">\(k\)</span> schools with the Fisher’s
-combining function:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ix_best <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">pmin</span>(p_right_tail,<span class="dv">1</span><span class="sc">-</span>p_right_tail), <span class="at">index.return=</span><span class="cn">TRUE</span>)<span class="sc">$</span>ix</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>bestk <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="cf">function</span>(i) </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">range</span>(<span class="fu">which</span>( <span class="fu">nplus_pvalue</span>(p_right_tail, <span class="at">method =</span> <span class="st">&quot;Fisher&quot;</span>, <span class="at">ix =</span> ix_best[<span class="dv">1</span><span class="sc">:</span>i]) <span class="sc">&gt;</span> <span class="fl">0.05</span>)) <span class="sc">-</span><span class="dv">1</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">asp=</span><span class="dv">1</span>, <span class="at">type=</span><span class="st">&quot;s&quot;</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,n),<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,n),</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>     bestk[<span class="dv">2</span>,], <span class="at">xlab=</span><span class="st">&quot;k&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;95% CI for the top k schools&quot;</span>)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(bestk[<span class="dv">1</span>,],<span class="at">type=</span><span class="st">&quot;s&quot;</span>)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span><span class="dv">0</span>,<span class="at">b=</span><span class="dv">1</span>)</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>n)</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>  (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">segments</span>(<span class="at">x0=</span>i,<span class="at">x1=</span>i,<span class="at">y0=</span>bestk[<span class="dv">1</span>,i], <span class="at">y1=</span>bestk[<span class="dv">2</span>,i])</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p><img src="data:image/png;base64,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IiACGQhEKqC2bdu6GTNmuMmTJ7uhQ4e6xo0bu65du7qlS5daz6hDhw6uSZMmGYrXZhEQARHITGC5zLv+f0+XLl1syLXrrrvahuHDh7tVV13VnXDCCe6xxx5zt912W1QR2i8CIiACoQQi54A4i2mi2bNnu9VWW81tsMEGVtDMmTNdy5Yt1fsJxaqNIiAC2RAIVUCvvfaamzJlSjbn2zFnnnlm1sfqQBEQAREICIQqoGHDhrkLLrggOCbylcloiQiIgAjkSiBUAeVaiI4XAREQgXwIRE5CJxc6b94898EHH7j111/fbb755m7ZZSMX0ZJP13sREAERSCGQlQaZM2eO22233VyLFi3sdYsttrCVsLPPPtsmqFNK1AcREAERyJJAZA/ol19+Mb+v7777zp1//vmuW7duZnz44osvuoEDB7oVVljBDRo0KMvqdJgIiIAI/I9ApAJ67rnn3Jtvvml/W221VeLMTp06uWWWWcaME6WAElj0RgREIAcCkUMwnFG32247l6x8gvKPO+44R2iOjz76KNikVxEQARHImkCkAsL59PXXX3dMQKfL448/7ho1auTkiJpORp9FQASyIRCpgHA8XWuttVzv3r1NEWHzgx/YxIkT3ZVXXukOPPBA8w/LpjIdIwIiIALJBLKyA3rllVfc0Ucf7VgNY94niOCxxx57uPvvvz/hLZ9csN6LgAiIQBSBrBQQhfzwww/u1VdftbhAK664okVI3GGHHaLK134REAERyEggchUsOJOYP5tuuqn1fgJDxGCfXkVABEQgHwKRc0AUKkPEfNDqHBEQgSgCkT0gGSJGIdR+ERCBfAlEKiAZIuaLVueJgAhEEYgcgskQMQqh9ouACORLIFIByRAxX7Q6TwREIIpApAKSIWIUQu0XARHIl0BWdkAyRMwXr84TARGoj0BWCogCZIhYH0btEwERyIdA1goon8J1jgiIgAjURyByGZ6TScEzcuRI9+677zoCk6UL3vISERABEciVQKQCWrBggYVhpWCcT8PiAuVaqY4XAREQAQhEKqAXXnjBEYKDnPBrrrmmqImACIhAwQhELsP/+OOP5vku5VMw5ipIBETgvwQiFdDuu+9uqXjeeecdQRMBERCBghIIHYL94x//cJMmTUpUtO2227qddtrJHXTQQW7jjTe2rBiJnf6b8847L/mj3ouACIhAVgRCl+GHDx/uLrnkkqwK4KBvvvkm62N1oAiIgAgEBEIVULBTryIgAiJQTAKRc0BUTgxoYj8TmCyQ0047zcKzBp/1KgIiIAK5EshKAeGQSg6wRYsWWfkopH/+859mE3T99dfnWqeOFwEREAEjEDkEe//9903RkB118803T8F24403ugsvvNAtXrzYUjSn7NQHERABEYggENkDev755y0zarryoVxS9eCkOnfu3IhqtFsEREAE6hKIVECtW7e2dDz1ZUYlaJlEBERABHIlEDkE++mnn1zLli0tJc9ll11mwzC2YSt0/vnnm33QmDFjcq234o9n+HnzzTe71VZbreKvRRdQWAJ8P5ZbbrmEvRzeBL/++qtbeeWV3bLLRv7mF6wx5O977LHH3KqrrlqwMgtdUKQCokJ6P926dXPMAyXLIYcc4m677Ta3xhprJG+uiffbb7+9u/rqq6WAauJu53aRF198sTlw40UwYsQIN336dIdtXal/rLp06eKmTZvm2rZtm9sFlPDoUEvo9PqbN2/u3njjDTd//nzLD9+oUSPH0Ayr6FoVfuGaNGniOnbsWKsIdN0ZCKy11lo2Uhg/frx76623TAnE4UsZNm+bocmxbc5KAdE6lt432GAD+/v8888dYVrp4pElVSICIpBK4L777rPFGRZx4lA+qa0p309ZDUgJRtamTRu7ig8//NC1atXK9ejRw9Ezeuqpp8r36tQyEYiBAKMF/qR8ouFHKiDygvXr18917tzZekFDhgyxybWpU6e6008/3fXp0ye6Fh0hAjVCgIWZzz77zLFgo55P9E2PVEBMoG266abulltuccsss4zNquMV36lTJ3fBBRfYvFBgIR1dnY4QgeolgPJ55pln7Md6lVVWqd4LLeCVRSqgr776yq2zzjpWJd1KIiPimoEQKZHJ2JVWWsk+658I1CqBQPkw7FphhRVqFUPO1x2pgFjCmzFjhps8ebIbOnSoa9y4sevatatbunSpGzBggOvQoYOtBuVcs04QgSohkKx8NOzK7aZGroJhS9C9e3e36667WsnYM2DYdMIJJ9hwDDsgiQjUKoEw5YMhIn+SaAKRCogiHnroITd79mwzpGIpHmECGk94bGEkIlCLBMKUDxymTJnimAPq1atXLWLJ6ZqzUkBMPm+55ZYpBbdv3z7lsz6IQC0RSFY+zIXecccdtkoMA1wvFCU0u6chKwWUXVE6SgRqg0Cy8mHO56KLLnIDBw40n8mAwIYbbhi81Ws9BKSA6oGjXSKQTiBZ+fz222/uT3/6k2WNYWriiCOOcLgp3X777eYlkH6uPtclELkKVvcUbRGB2iSQrHzo+ZC0k3lQPN3JHCPJnYB6QGnMsPC+++6707bW/UhkgFmzZplBZt292lJtBJKVDwsvO++8s5miYAd37LHHugkTJlTbJZfkeiIVEL5f6623ns3qp7fo22+/deecc46F5EjfV6mf1157bbNtimr/qFGjzBAz6jjtr3wCycqHng82cC+99JK79NJLrfdT+VcY3xVEKiAyop544onuiSeeMCPEoKnPPfec6927t8MzvppsgQhhkE0YA8b+5RzoKbhPem0YgUD5rLvuuu6Pf/yjPe9BBFBckgj4JcmfQOQcEGPbTz75xB1wwAH2i//dd9+5U045xayhmeknO4ZEBKqRQKB8cK8gAuh+++3nll9+efOBlLtFYe54ZA+oWbNmNtmGRfQ+++xjucG+/vprR4gOFBE2QhIRqDYCgfLBEZveDytem2yyia1utWvXTs99gW54pAKinhYtWpgvGEoI51R6PdwMiQhUIwGUD3Gu7r33XsuHh/P1L7/8Yt+DarzeOK8pVAG9+uqr7u9//3uddtEDwhesb9++bpdddknsJyyHRASqgUDQ88H38Q9/+INdErGdcUWSFJ5ARgU0ePDg0NpWX311C8dKSNZApIACEnqtZAIonyeffNKMCydOnGiLEThiMw0hBVScOxuqgOjh8CcRgVohEPR8mNck0gPzPko4UPy7H7kKVvwmqAYRiJdAMOez2267WeopPNlJuYT9m6S4BEJ7QMWtUqWLQPkQCHo+d911l6Ug33fffbXAUsLbU/E9INIFffHFFw7TAIkI5EIgUD6s6F5zzTV26oUXXqgYV7lAbOCxFamAFixYYGmhN9poI4u/y3idZHBkniSELO4hGExKRCATgUD5YGT48MMPW+KFUmcuzdS2Wtqe0xCMwEusBuAvRU6wOASrbEziMYA89NBDrbuMfw6f6QV99NFHbuzYsW7cuHGWlwlDMokIJBMIlA8/XAy5kJ49ezqGYZLSEshKATHEweP32WefTTjfkSmD7io+UaUU8pLR88EX7Xe/+11o1XSnsVnCkOzKK68MPUYba5NAoHzo+fAjeu6557p3331Xw66Y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" /><!-- --></p>
 <p>Directional closed testing procedure: <span class="math inline">\(95\%\)</span> confidence lower and upper bounds on
 the number of studies with positive/negative effect
 (<code>lo+</code>/<code>lo-</code> and
 <code>up+</code>/<code>up-</code>) and corresponding number of
 discoveries (<code>id+</code>/<code>id-</code>) for different combining
-functions: Fisher and Simes:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(<span class="st">&quot;hommel&quot;</span>) <span class="sc">||</span> <span class="fu">install.packages</span>(<span class="st">&quot;hommel&quot;</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(<span class="st">&quot;sumSome&quot;</span>) <span class="sc">||</span> <span class="fu">install.packages</span>(<span class="st">&quot;sumSome&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>S_minus <span class="ot">=</span> <span class="fu">which</span>(p_right_tail <span class="sc">&lt;=</span> <span class="fl">0.5</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>S_plus <span class="ot">=</span> <span class="fu">which</span>(p_right_tail <span class="sc">&gt;</span> <span class="fl">0.5</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>p_twotail <span class="ot">=</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">pmin</span>(p_right_tail, <span class="dv">1</span><span class="sc">-</span>p_right_tail)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>RES_CT <span class="ot">=</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol=</span><span class="dv">7</span>, <span class="at">nrow=</span><span class="dv">2</span>)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>RES_CT[,<span class="dv">1</span>] <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Fisher&quot;</span>,<span class="st">&quot;Simes&quot;</span>)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(RES_CT) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Local test&quot;</span>, <span class="st">&quot;lo+&quot;</span>,<span class="st">&quot;up+&quot;</span>,<span class="st">&quot;id+&quot;</span>, <span class="st">&quot;lo-&quot;</span>,<span class="st">&quot;up-&quot;</span>,<span class="st">&quot;id-&quot;</span>)</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>l_plus_sumsome <span class="ot">=</span> sumSome<span class="sc">::</span><span class="fu">discoveries</span>(<span class="fu">sumPvalsPar</span>(<span class="at">g=</span>p_twotail, <span class="at">S =</span> S_minus, <span class="at">type =</span> <span class="st">&quot;Fisher&quot;</span>, <span class="at">independence =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>l_minus_sumsome <span class="ot">=</span> sumSome<span class="sc">::</span><span class="fu">discoveries</span>(<span class="fu">sumPvalsPar</span>(<span class="at">g=</span>p_twotail, <span class="at">S =</span> S_plus, <span class="at">type =</span> <span class="st">&quot;Fisher&quot;</span>, <span class="at">independence =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">1</span>,<span class="dv">2</span>]<span class="ot">&lt;-</span>l_plus_sumsome</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">1</span>,<span class="dv">3</span>]<span class="ot">&lt;-</span>n<span class="sc">-</span>l_minus_sumsome</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">1</span>,<span class="dv">5</span>]<span class="ot">&lt;-</span>l_minus_sumsome</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">1</span>,<span class="dv">6</span>]<span class="ot">&lt;-</span>n<span class="sc">-</span>l_plus_sumsome</span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>ix_plus <span class="ot">&lt;-</span> <span class="fu">sort</span>(p_right_tail, <span class="at">index.return=</span><span class="cn">TRUE</span>)<span class="sc">$</span>ix</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">1</span>,<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(l_plus_sumsome <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="fu">sum</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>l_plus_sumsome, <span class="cf">function</span>(i)</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sumPvalsPar</span>(<span class="at">g=</span>p_twotail, <span class="at">S=</span>ix_plus[<span class="dv">1</span><span class="sc">:</span>i], <span class="at">type =</span> <span class="st">&quot;Fisher&quot;</span>, <span class="at">independence =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>TD) <span class="sc">==</span> <span class="dv">1</span><span class="sc">:</span>l_plus_sumsome),</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  <span class="dv">0</span>)</span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>ix_minus <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="dv">1</span><span class="sc">-</span>p_right_tail, <span class="at">index.return=</span><span class="cn">TRUE</span>)<span class="sc">$</span>ix</span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">1</span>,<span class="dv">7</span>]<span class="ot">&lt;-</span> <span class="fu">ifelse</span>(l_minus_sumsome<span class="sc">&gt;</span><span class="dv">0</span>, <span class="fu">sum</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>l_minus_sumsome, <span class="cf">function</span>(i)</span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sumPvalsPar</span>(<span class="at">g=</span>p_twotail, <span class="at">S=</span>ix_minus[<span class="dv">1</span><span class="sc">:</span>i], <span class="at">type =</span> <span class="st">&quot;Fisher&quot;</span>, <span class="at">independence =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>TD) <span class="sc">==</span> <span class="dv">1</span><span class="sc">:</span>l_minus_sumsome),</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="dv">0</span>)</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>res_hommel <span class="ot">&lt;-</span> <span class="fu">hommel</span>(p_twotail)</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>l_plus_hommel <span class="ot">=</span> hommel<span class="sc">::</span><span class="fu">discoveries</span>(res_hommel, <span class="at">ix =</span> S_minus)</span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>l_minus_hommel <span class="ot">=</span> hommel<span class="sc">::</span><span class="fu">discoveries</span>(res_hommel, <span class="at">ix =</span> S_plus)</span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">2</span>,<span class="dv">2</span>]<span class="ot">&lt;-</span>l_plus_hommel</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">2</span>,<span class="dv">3</span>]<span class="ot">&lt;-</span>n<span class="sc">-</span>l_minus_hommel</span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">2</span>,<span class="dv">4</span>]<span class="ot">&lt;-</span><span class="fu">sum</span>(res_hommel<span class="sc">@</span>adjusted[S_minus] <span class="sc">&lt;=</span> <span class="fl">0.05</span>)</span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">2</span>,<span class="dv">5</span>]<span class="ot">&lt;-</span>l_minus_hommel</span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">2</span>,<span class="dv">6</span>]<span class="ot">&lt;-</span>n<span class="sc">-</span>l_plus_hommel</span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>RES_CT[<span class="dv">2</span>,<span class="dv">7</span>]<span class="ot">&lt;-</span><span class="fu">sum</span>(res_hommel<span class="sc">@</span>adjusted[S_plus] <span class="sc">&lt;=</span> <span class="fl">0.05</span>)</span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>RES_CT</span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Local test lo+ up+  id+ lo- up-  id-</span></span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] &quot;Fisher&quot;   &quot;9&quot; &quot;56&quot; &quot;4&quot; &quot;0&quot; &quot;47&quot; &quot;0&quot;</span></span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] &quot;Simes&quot;    &quot;8&quot; &quot;56&quot; &quot;8&quot; &quot;0&quot; &quot;48&quot; &quot;0&quot;</span></span></code></pre></div>
+functions.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>S_minus <span class="ot">=</span> <span class="fu">which</span>(p_right_tail <span class="sc">&lt;=</span> <span class="fl">0.5</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>S_plus <span class="ot">=</span> <span class="fu">which</span>(p_right_tail <span class="sc">&gt;</span> <span class="fl">0.5</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>RES_DCT <span class="ot">=</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">ncol=</span><span class="dv">7</span>, <span class="at">nrow=</span><span class="dv">4</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>RES_DCT[,<span class="dv">1</span>] <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Fisher&quot;</span>,<span class="st">&quot;Simes&quot;</span>,<span class="st">&quot;mSimes&quot;</span>,<span class="st">&quot;ALRT&quot;</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(RES_DCT) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Local test&quot;</span>, <span class="st">&quot;lo+&quot;</span>,<span class="st">&quot;up+&quot;</span>,<span class="st">&quot;id+&quot;</span>, <span class="st">&quot;lo-&quot;</span>,<span class="st">&quot;up-&quot;</span>,<span class="st">&quot;id-&quot;</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>){</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a> res_lo <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">which</span>(<span class="fu">nplus_pvalue</span>(p_right_tail, <span class="at">method=</span>RES_DCT[i,<span class="dv">1</span>], <span class="at">ix =</span> S_minus) <span class="sc">&gt;</span> <span class="fl">0.05</span>))<span class="sc">-</span><span class="dv">1</span> </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  res_up <span class="ot">&lt;-</span> n <span class="sc">-</span>  <span class="fu">min</span>(<span class="fu">which</span>(<span class="fu">nplus_pvalue</span>(p_right_tail, <span class="at">method=</span>RES_DCT[i,<span class="dv">1</span>], <span class="at">ix =</span> S_plus) <span class="sc">&gt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span> <span class="dv">1</span> </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a> res_id <span class="ot">&lt;-</span> <span class="fu">nplus_fwer</span>(p_right_tail, <span class="at">method=</span>RES_DCT[i,<span class="dv">1</span>])</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a> RES_DCT[i,<span class="dv">2</span>] <span class="ot">&lt;-</span> res_lo</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a> RES_DCT[i,<span class="dv">3</span>] <span class="ot">&lt;-</span> n <span class="sc">-</span> res_up</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a> RES_DCT[i,<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">length</span>(res_id<span class="sc">$</span>positive)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a> RES_DCT[i,<span class="dv">5</span>] <span class="ot">&lt;-</span> res_up</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a> RES_DCT[i,<span class="dv">6</span>] <span class="ot">&lt;-</span> n <span class="sc">-</span> res_lo</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a> RES_DCT[i,<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="fu">length</span>(res_id<span class="sc">$</span>nonpositive)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>RES_DCT</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Local test lo+ up+ id+ lo-  up-  id-</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] &quot;Fisher&quot;   &quot;9&quot; &quot;0&quot; &quot;4&quot; &quot;56&quot; &quot;47&quot; &quot;0&quot;</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] &quot;Simes&quot;    &quot;8&quot; &quot;0&quot; &quot;8&quot; &quot;56&quot; &quot;48&quot; &quot;0&quot;</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] &quot;mSimes&quot;   &quot;8&quot; &quot;0&quot; &quot;8&quot; &quot;56&quot; &quot;48&quot; &quot;0&quot;</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4,] &quot;ALRT&quot;     &quot;9&quot; &quot;0&quot; &quot;5&quot; &quot;56&quot; &quot;47&quot; &quot;0&quot;</span></span></code></pre></div>
 <p>Discoveries by Guo and Romano (2015) procedure with FWER control at
 0.05 level:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>GuoRomano2015 <span class="ot">&lt;-</span> <span class="cf">function</span>(p_right_tail, <span class="at">alpha=</span><span class="fl">0.05</span>){</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> p_right_tail</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">length</span>(p)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  sp <span class="ot">&lt;-</span> <span class="fu">sort</span>( <span class="fu">c</span>(p,<span class="dv">1</span><span class="sc">-</span>p), <span class="at">index.return=</span><span class="cn">TRUE</span> )</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  REJ <span class="ot">&lt;-</span> sp<span class="sc">$</span>x <span class="sc">&lt;=</span> alpha <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">1</span><span class="sc">:</span>n <span class="sc">+</span> 1L <span class="sc">+</span> alpha)</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  REJ_NONPOS <span class="ot">&lt;-</span>  <span class="dv">1</span><span class="sc">:</span>n <span class="sc">%in%</span> sp<span class="sc">$</span>ix[REJ]</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  REJ_POS <span class="ot">&lt;-</span>  (n<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span><span class="sc">*</span>n) <span class="sc">%in%</span> sp<span class="sc">$</span>ix[REJ]</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">n_discoveries_positive=</span><span class="fu">sum</span>(REJ_NONPOS), <span class="at">n_discoveries_nonpositive=</span><span class="fu">sum</span>(REJ_POS)))</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="fu">GuoRomano2015</span>(p_right_tail)</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $n_discoveries_positive</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 8</span></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $n_discoveries_nonpositive</span></span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>GuoRomano2015 <span class="ot">&lt;-</span> <span class="cf">function</span>(p_right_tail, <span class="at">alpha=</span><span class="fl">0.05</span>){</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> p_right_tail</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">length</span>(p)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  sp <span class="ot">&lt;-</span> <span class="fu">sort</span>( <span class="fu">c</span>(p,<span class="dv">1</span><span class="sc">-</span>p), <span class="at">index.return=</span><span class="cn">TRUE</span> )</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  REJ <span class="ot">&lt;-</span> sp<span class="sc">$</span>x <span class="sc">&lt;=</span> alpha <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">1</span><span class="sc">:</span>n <span class="sc">+</span> 1L <span class="sc">+</span> alpha)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  REJ_NONPOS <span class="ot">&lt;-</span>  <span class="dv">1</span><span class="sc">:</span>n <span class="sc">%in%</span> sp<span class="sc">$</span>ix[REJ]</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  REJ_POS <span class="ot">&lt;-</span>  (n<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span><span class="sc">*</span>n) <span class="sc">%in%</span> sp<span class="sc">$</span>ix[REJ]</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">n_discoveries_positive=</span><span class="fu">sum</span>(REJ_NONPOS), <span class="at">n_discoveries_nonpositive=</span><span class="fu">sum</span>(REJ_POS)))</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="fu">GuoRomano2015</span>(p_right_tail)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $n_discoveries_positive</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 8</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $n_discoveries_nonpositive</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span></code></pre></div>
 <p>Konstantopoulos, S. (2011). Fixed effects and variance components
 estimation in three-level meta-analysis. Research Synthesis Methods,
 2(1):61–76.</p>
