@@ -165,11 +165,6 @@ nplus_fwer(p_right_tail, alpha=0.05, method="Simes")
 Gail, M. and Simon, R. (1985). Testing for qualitative interactions between treatment
 effects and patient subsets. Biometrics, pages 361–372.
 
-## Testing for qualitative interactions with follow-up inference
-
-If testing for mixed signs of the parameter vector $\theta$ is of primary concern, DCT is applied only if the hypothesis of no qualitative interaction, $H_0: \{n^+=0 \}\cup \{n^-=0\},$  is rejected.   
-
-TBC
 
 ## Enhancing meta-analysis
 
@@ -193,51 +188,41 @@ n <- length(x)
 p_right_tail <- pnorm(x, lower.tail = FALSE)
 ```
 
-Adaptive partitioning procedure: $95\%$ confidence lower and upper bounds on the number of studies with positive/nonpositive effect (`lo+ `/`lo- `  and `up+ `/`up- `) and corresponding number of discoveries (`id+ `/`id- `) for different combining functions: Fisher, Simes, adaptive Simes and adaptive LRT:
+Partitioning procedure with adaptive tests (P) and directional closed testing (DCT) procedures: $(1-\alpha)=95\%$ confidence bounds [`LO+`,`UP+`] on the number of studies with positive effects along with the number of positive discoveries (`D+`) and $95\%$ confidence bounds [`LO-`,`UP-`] on the number of studies with nonpositive/negative effects along with the number of nonpositive/negative discoveries (`D-`) for different combining functions: Fisher, Simes, modified Simes and adaptive LRT:
 
 ```{r}
-RES = matrix(NA, ncol=7, nrow=4)
-RES[,1] = c("Fisher","Simes","mSimes","ALRT")
-colnames(RES) <- c("Local test", "lo+","up+","id+", "lo-","up-","id-")
-for (i in 1:4){
- res_bound <- nplus_bound(p_right_tail, method=RES[i,1])
- res_id <- nplus_fwer(p_right_tail, method=RES[i,1])
- RES[i,2] <- res_bound$lo
- RES[i,3] <- res_bound$up
- RES[i,4] <- length(res_id$positive)
- RES[i,5] <- n-res_bound$up
- RES[i,6] <- n-res_bound$lo
- RES[i,7] <- length(res_id$nonpositive)
-}
-RES
-```
-
-
-
-
-Directional closed testing procedure: $95\%$ confidence lower and upper bounds on the number of studies with positive/negative effect (`lo+ `/`lo- `  and `up+ `/`up- `) and corresponding number of discoveries (`id+ `/`id- `) for different combining functions.
-
-```{r}
+alpha = 0.05
 S_minus = which(p_right_tail <= 0.5)
 S_plus = which(p_right_tail > 0.5)
-RES_DCT = matrix(NA, ncol=7, nrow=4)
-RES_DCT[,1] = c("Fisher","Simes","mSimes","ALRT")
-colnames(RES_DCT) <- c("Local test", "lo+","up+","id+", "lo-","up-","id-")
+RES = matrix(NA, ncol=8, nrow=8)
+RES[,1] = rep(c("Fisher","Simes","mSimes","ALRT"),each=2)
+RES[,2] = rep(c("P","DCT"),4)
+colnames(RES) <- c("Local test","Procedure", "LO+","UP+","D+", "LO-","UP-","D-")
 for (i in 1:4){
- res_lo <- min(which(nplus_pvalue(p_right_tail, method=RES_DCT[i,1], ix = S_minus) > 0.05))-1 
-  res_up <- n -  min(which(nplus_pvalue(p_right_tail, method=RES_DCT[i,1], ix = S_plus) > 0.05)) + 1 
- res_id <- nplus_fwer(p_right_tail, method=RES_DCT[i,1])
- RES_DCT[i,2] <- res_lo
- RES_DCT[i,3] <- n - res_up
- RES_DCT[i,4] <- length(res_id$positive)
- RES_DCT[i,5] <- res_up
- RES_DCT[i,6] <- n - res_lo
- RES_DCT[i,7] <- length(res_id$nonpositive)
+ res_bound <- nplus_bound(p_right_tail, method=RES[i,1], alpha=alpha)
+ res_d <- nplus_fwer(p_right_tail, method=RES[i,1], alpha=alpha)
+ res_dct_lo <- min(which(nplus_pvalue(p_right_tail, method=RES[i,1], ix = S_minus) > alpha)) - 1
+ res_dct_up <- n - min(which(nplus_pvalue(p_right_tail, method=RES[i,1], ix = S_plus) > alpha)) - 1 
+ RES[(2*i)-1,3] <- res_bound$lo
+ RES[2*i,3] <- res_dct_lo
+ RES[(2*i)-1,4] <- res_bound$up
+ RES[2*i,4] <- res_dct_up
+ RES[(2*i)-1,5] <- RES[2*i,5] <- length(res_d$positive)
+ RES[(2*i)-1,6] <- n-res_bound$up
+ RES[2*i,6] <- n - res_dct_up
+ RES[(2*i)-1,7] <- n-res_bound$lo
+ RES[2*i,7] <- n - res_dct_lo
+ RES[(2*i)-1,8] <- RES[2*i,8] <- length(res_d$nonpositive)
 }
-RES_DCT
+knitr::kable(RES)
 ```
 
-Discoveries by Guo and Romano (2015) procedure with FWER control at 0.05 level:
+
+
+
+
+
+Discoveries by Guo and Romano (2015) procedures with FWER and FDR control at $\alpha=0.05$ level:
 
 ```{r}
 GuoRomano2015 <- function(p_right_tail, alpha=0.05){
@@ -245,14 +230,24 @@ GuoRomano2015 <- function(p_right_tail, alpha=0.05){
   p <- p_right_tail
   n <- length(p)
   sp <- sort( c(p,1-p), index.return=TRUE )
-  REJ <- sp$x <= alpha / (n - 1:n + 1L + alpha)
-  REJ_NONPOS <-  1:n %in% sp$ix[REJ]
-  REJ_POS <-  (n+1):(2*n) %in% sp$ix[REJ]
   
-  return(list(n_discoveries_positive=sum(REJ_NONPOS), n_discoveries_nonpositive=sum(REJ_POS)))
+  FWER_id <- max(which(cumsum( sp$x <= alpha / (n - 1:n + 1L + alpha) )==1:(2*n)))
+  FWER_REJ <- rep(FALSE,2*n)
+  if (is.finite(FWER_id)) FWER_REJ[1:FWER_id] <- TRUE
+  FWER_NONPOS <-  1:n %in% sp$ix[FWER_REJ]
+  FWER_POS <-  (n+1):(2*n) %in% sp$ix[FWER_REJ]
+  
+  FDR_id <- max(which(sp$x <= alpha * (1:n) / n))
+  FDR_REJ <- rep(FALSE,2*n)
+  if (is.finite(FDR_id)) FDR_REJ[1:FDR_id] <- TRUE
+  FDR_NONPOS <-  1:n %in% sp$ix[FDR_REJ]
+  FDR_POS <-  (n+1):(2*n) %in% sp$ix[FDR_REJ]
+  
+  return(list(FWER = list(n_discoveries_positive = sum(FWER_NONPOS), n_discoveries_nonpositive = sum(FWER_POS)), 
+              FDR= list(n_discoveries_positive = sum(FDR_NONPOS), n_discoveries_nonpositive = sum(FDR_POS))))
   
 }
-GuoRomano2015(p_right_tail)
+GuoRomano2015(p_right_tail, alpha = alpha)
 ```
 
 Konstantopoulos, S. (2011). Fixed effects and variance components estimation in three-level
