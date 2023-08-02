@@ -34,7 +34,7 @@ $$n^+(I) = |\{ i \in I : \theta_i > 0 \}|, \quad n^-(I) = |\{ i \in I : \theta_i
 $$
 For simplicity of notation, we use $n^+$ and $n^-$ instead of $n^+(\{1,\ldots,n\})$ and  $n^-(\{1,\ldots,n\})$.
 
-Our first goal is to provide lower bounds $\ell_{\alpha}^{+}(I)$ and $\ell_{\alpha}^{-}(I)$  for  $n^+(I)$ and  $n^-(I)$ such that 
+Our first goal is to provide post-hoc lower bounds $\ell_{\alpha}^{+}(I)$ and $\ell_{\alpha}^{-}(I)$  for  $n^+(I)$ and  $n^-(I)$ such that 
 $$
 \mathrm{pr}_{\theta}\Big(
 n^{+}(I) 
@@ -73,22 +73,43 @@ n^{-}(I)+n^{0}(I)
 \geq 
 \bar{\ell}_{\alpha}^{-}(I),
  \mathrm{\,\,for\,\,all\,\,}I  \Big) \geq 1- \alpha.$$
-For finding $\bar{\ell}_{\alpha}^+(I)$ and $\bar{\ell}_{\alpha}^-(I)$ we use the *partitioning principle* to the $2^n$ orthants defined by $\theta_i \in \{\theta_i\leq 0, \theta_i>0\}, i=1,\ldots, n$. It turns out that the bounds obtained through the partitioning principle with *adaptive tests* uniformly improves upon the DCT bounds:
+For finding $\bar{\ell}_{\alpha}^+(I)$ and $\bar{\ell}_{\alpha}^-(I)$ we use the *partitioning principle* to the $2^n$ orthants defined by $\theta_i \in \{(-\infty,0],(0,\infty)\}, i=1,\ldots, n$. Heller & Solari (2023) showed that the bounds obtained through the partitioning principle with *adaptive tests* uniformly improves upon the DCT bounds:
 $\bar{\ell}_{\alpha}^{+}(I)\geq \ell_{\alpha}^{+}(I)$, $\bar{\ell}_{\alpha}^{-}(I)\geq \ell_{\alpha}^{-}(I)$. 
+
+Heller, R. and Solari, A. (2022). Simultaneous directional inference. arXiv preprint arXiv:2301.01653
 
 ## Subgroup Analysis
 
 The data analysed in Gail and Simon (1985) consists of the difference in disease-free survival probabilities at 3 years for breast cancer patients who underwent a PFT treatment compared to those who received a PF treatment. The study includes a total of 1260 patients divided in $n=4$ subgroups, classified based on age and progesterone receptor levels. Table 2 in Gail and Simon
-(1985) reports for each subgroup the difference $d_i$ and the corresponding standard error $s_i$.
+(1985) reports the Kaplan-Meier estimate $\hat{\pi}_{ij}$ of the disease-free survival probability at 3 years for patients who underwent treatment $j$ and belong to subgroup $i$, along with the corresponding standard error $\mathrm{SE}(\hat{\pi}_{ij})$, calculated using Greenwood's formula. 
 
-```{r}
-d_i = c(.163, -.114, -.047, -.151)
-s_i = c(.0788, .0689, .0614, .0547)
-p_right_tail = 1-pnorm(d_i/s_i)
+We consider the arcsine-square root transformation $g(\hat{\pi}_{ij}) = \arcsin{ \sqrt{ \hat{\pi}_{ij} } }$ and compute the standardized difference $\hat{\theta}_i=  \{ g(\hat{\pi}_{i1}) - g(\hat{\pi}_{i2}) \} /\sqrt{ 1/(4 \tilde{m}_{i1}) + 1/(4 \tilde{m}_{i2}) }$, where $\tilde{m}_{ij}=\hat{\pi}_{ij} (1-\hat{\pi}_{ij})$ is the effective sample size. The $p$-value $p_i$ for $H_i^-$ is calculated as $1-\Phi(\hat{\theta}_i)$, where $\Phi(\cdot)$ is the $N(0,1)$ CDF.
+
+
+```{r, echo=FALSE}
+pi_1 = c(.599,  .526,  .651,  .639) 
+pi_2 = c(.436, .639, .698, .790)
+SE_1 = c(.0542,  .0510,  .0431,  .0386 )
+SE_2 = c(.0572,  .0463,  .0438,  .0387)
+kableExtra::kable(cbind(1:4,pi_1,SE_1,pi_2,SE_2), 
+                  caption = "The Kaplan-Meier estimate of survival probability at 3 years (and standard error SE) for patients in subgroup $i$ receiving treatment PFT or PF.", col.names = c("Subgroup i","PFT", "SE(PFT)", "PF", "SE(PF)"))
 ```
 
-The right-sided $p$-value for $H_i^-$ is calculated using the large-sample normal approximation. 
-Based on the right-sided $p$-values, we select the hypotheses $H_1^-$, $H_2^+$, $H_3^+$, $H_4^+$ and we adjust for the selection the corresponding $p$-values:
+```{r}
+pi_1 = c(.599,  .526,  .651,  .639) 
+pi_2 = c(.436, .639, .698, .790)
+SE_1 = c(.0542,  .0510,  .0431,  .0386 )
+SE_2 = c(.0572,  .0463,  .0438,  .0387)
+m1_tilde = (pi_1*(1-pi_1))/(SE_1^2)
+m2_tilde = (pi_2*(1-pi_2))/(SE_2^2)
+thetaHat = (asin(sqrt(pi_1)) - asin(sqrt(pi_2)))/sqrt( 1/(4*m1_tilde) + 1/(4*m2_tilde) )
+round(thetaHat,3)
+p_right_tail = 1-pnorm(thetaHat)
+round(p_right_tail,4)
+```
+
+ 
+Based on the $p$-values $p_i$, we select the hypotheses $H_1^-$, $H_2^+$, $H_3^+$, $H_4^+$ and we adjust for the selection the corresponding $p$-values:
 
 ```{r}
 n = length(p_right_tail)
@@ -97,7 +118,7 @@ S[p_right_tail <= 0.5] <- "-"
 hyp_selected <- paste0("H",paste0(1:n,S))
 p_selected <- 2*pmin(p_right_tail, 1-p_right_tail)
 names(p_selected) <- hyp_selected
-p_selected
+round(p_selected,4)
 ```
 
 Function to compute the power set of a set:
@@ -119,11 +140,11 @@ p_combi_test <- function(x) {  min(sort(x)*length(x)/(1:length(x)))  }
 Computing the $p$-value for each intersection hypothesis by using the Simes local test:
 
 ```{r, message=F, warning=F, error=F, comment=NA}
-res = round(unlist(
+res = unlist(
   lapply(powset(1:n), function(x) p_combi_test(p_selected[x]))
-),4)
+)
 names(res) <- powset(hyp_selected)
-res
+round(res,4)
 ```
 
 Adjusted $p$-values by closed testing:
@@ -132,7 +153,7 @@ res_ct = res
 closure = powset(1:n)
 for (k in 1:length(closure))
 res_ct[[k]] = max(res[sapply(1:length(closure), function(i) all(closure[[k]] %in% closure[[i]]))]) 
-res_ct
+round(res_ct,4)
 ```
 
 
@@ -147,10 +168,8 @@ hyp_part[[i]][ powset(1:n)[[i]] ] <- S[ powset(1:n)[[i]] ]
 }
 res_part <- res
 names(res_part) <- hyp_part
-res_part
+round(res_part,4)
 ```
-
-
 
 $95\%$ confidence lower and upper bounds $\bar{\ell}_{\alpha}^{+}$ and $n - \bar{\ell}_{\alpha}^{-}$ for $n^+$  by using the partitioning procedure with adaptive Simes' tests:
 ```{r}
@@ -164,6 +183,29 @@ nplus_fwer(p_right_tail, alpha=0.05, method="Simes")
 
 Gail, M. and Simon, R. (1985). Testing for qualitative interactions between treatment
 effects and patient subsets. Biometrics, pages 361–372.
+
+## Testing for qualitative interactions with follow-up inference
+
+If testing for mixed signs of the parameter vector $\theta$
+ is of primary concern, DCT is applied only if the hypothesis of no qualitative interaction, $H_0:\{n^+=0\}\cup\{ n^−=0\}$,
+ is rejected.
+
+```{r}
+res_qi = res
+powset_ix = powset(1:n)
+p_Sminus =res[sapply(1:length(powset_ix), function(i) identical(which(S=="-") , unlist(powset_ix[i])))]
+p_Splus =res[sapply(1:length(powset_ix), function(i) identical(which(S=="+") , unlist(powset_ix[i])))]
+p_H0 = max(p_Sminus,p_Splus)
+round(p_H0,4)
+res_qi[sapply(1:length(powset_ix), function(i) all(which(S=="+") %in% unlist(powset_ix[i])))] <- p_H0
+res_qi[sapply(1:length(powset_ix), function(i) all(which(S=="-") %in% unlist(powset_ix[i])))] <- p_H0
+round(res_qi,4)
+res_qi_ct <- res_qi
+for (k in 1:length(closure))
+res_qi_ct[[k]] = max(res_qi_ct[sapply(1:length(closure), function(i) all(closure[[k]] %in% closure[[i]]))]) 
+round(res_qi_ct,4)
+```
+
 
 
 ## Enhancing meta-analysis
@@ -250,8 +292,336 @@ GuoRomano2015 <- function(p_right_tail, alpha=0.05){
 GuoRomano2015(p_right_tail, alpha = alpha)
 ```
 
+Adaptive local test with partitioning: $95\%$ post-hoc bounds for $n^+(I_k)$ with Fisher's combining function, where $I_k$ are the indexes of the top $k=|I_k|$ schools with largest (in absolute value) effects.
+For example, among the top 38 schools, we observe at least 9 positive effects and at least 1 non-positive effect, or among the top 51 schools, we observe at least 10 positive effects and at least 2 non-positive effects, and so on.
+
+```{r, fig.height=5, fig.width=5}
+ix_best <- sort(pmin(p_right_tail,1-p_right_tail), index.return=TRUE)$ix
+bestk <- sapply(1:n, function(i) 
+  range(which( nplus_pvalue(p_right_tail, method = "Fisher", ix = ix_best[1:i]) > 0.05)) -1
+)
+plot(asp=1, type="s", ylim=c(0,n),xlim=c(1,n),
+     bestk[2,], xlab="k", ylab="95% CI for the top k schools")
+lines(bestk[1,],type="s")
+abline(h=0)
+abline(a=0,b=1)
+abline(v=n)
+for  (i in 1:n){
+  segments(x0=i,x1=i,y0=bestk[1,i], y1=bestk[2,i])
+}
+segments(x0=37,x1=37,y0=bestk[1,37], y1=bestk[2,37], col="red")
+segments(x0=50,x1=50,y0=bestk[1,50], y1=bestk[2,50], col="blue")
+```
+
+
+
 Konstantopoulos, S. (2011). Fixed effects and variance components estimation in three-level
 meta-analysis. Research Synthesis Methods, 2(1):61–76.
 
 Guo, W. and Romano, J. P. (2015). On stepwise control of directional errors under independence and some dependence. Journal of Statistical Planning and Inference, 163:21–33.
+
+## Power for $n=2$
+
+Reproducing Fig. 2 in Heller & Solari (2023):
+
+```{r, echo=FALSE, fig.height=5, fig.width=5}
+rm(list=ls())
+
+library(mvtnorm)
+
+Sigma = diag(c(1,1))
+
+alpha = 0.05
+alpha_star = 4*alpha/3
+
+a = qnorm(1-alpha/2)
+b = qnorm(1-alpha/4)
+a_star = qnorm(1-alpha_star/2)
+b_star = qnorm(1-alpha_star/4)
+
+mu1 = c(0,2)
+mu2 = seq(-3,3, length=101)
+
+#-------------------------------
+# NON-TRIVIAL BOUNDS PROBABILITY
+#-------------------------------
+
+DCT_pr <- P_pr <- matrix(NA,nrow=length(mu1),ncol=length(mu2))
+
+for (j in 1:length(mu1)){
+  for (i in 1:length(mu2)){
+
+DCT_pr[j,i] <- 1 - c(
+            pmvnorm(lower = c(-b,-b),
+                   upper = c(b,b),
+                   mean=c(mu1[j],mu2[i]), 
+                   corr=Sigma) - 
+            pmvnorm(lower = c(a,a),
+                    upper = c(b,b),
+                    mean=c(mu1[j],mu2[i]), 
+                    corr=Sigma) - 
+            pmvnorm(lower = c(-b,a),
+                    upper = c(-a,b),
+                    mean=c(mu1[j],mu2[i]), 
+                    corr=Sigma) -
+            pmvnorm(lower = c(-b,-b),
+                    upper = c(-a,-a),
+                    mean=c(mu1[j],mu2[i]), 
+                    corr=Sigma) - 
+            pmvnorm(lower = c(-b,a),
+                    upper = c(-a,b),
+                    mean=c(mu1[j],mu2[i]), 
+                    corr=Sigma) 
+            )
+
+P_pr[j,i] <- 1 - c(
+  pmvnorm(lower = c(-b_star,-b_star),
+          upper = c(b_star,b_star),
+          mean=c(mu1[j],mu2[i]), 
+          corr=Sigma) - 
+    pmvnorm(lower = c(a_star,a_star),
+            upper = c(b_star,b_star),
+            mean=c(mu1[j],mu2[i]), 
+            corr=Sigma) - 
+    pmvnorm(lower = c(-b_star,0),
+            upper = c(-a_star,b_star),
+            mean=c(mu1[j],mu2[i]), 
+            corr=Sigma) -
+    pmvnorm(lower = c(-a_star,a_star),
+            upper = c(0,b_star),
+            mean=c(mu1[j],mu2[i]), 
+            corr=Sigma) -
+    pmvnorm(lower = c(-b_star,-b_star),
+            upper = c(-a_star,-a_star),
+            mean=c(mu1[j],mu2[i]), 
+            corr=Sigma) - 
+    pmvnorm(lower = c(0,-b_star),
+            upper = c(a_star,-a_star),
+            mean=c(mu1[j],mu2[i]), 
+            corr=Sigma) -
+    pmvnorm(lower = c(a_star,-b_star),
+            upper = c(b_star,0),
+            mean=c(mu1[j],mu2[i]), 
+            corr=Sigma) 
+)
+
+}}
+
+plot(mu2, DCT_pr[1,], type="l", ylab="Non-trivial bounds probability", xlab=expression(theta[2]), ylim=c(0, 1), lwd=2)
+lines(mu2, P_pr[1,], lty=2, lwd=2)
+lines(mu2, P_pr[2,], lty=2, lwd=2, col=4)
+lines(mu2, DCT_pr[2,], lwd=2, col=4)
+
+legend("top",
+       expression("DCT","P",
+                  paste(theta[1]," = 0"),
+                  paste(theta[1]," = 2")),
+       col=c(1,1,1,4), lty=c(1,2,1,1))
+abline(h=alpha, lty=3)
+
+
+# average number of discoveries
+
+DCT_ad <- P_ad <- matrix(NA,nrow=length(mu1),ncol=length(mu2))
+
+average_discoveries = function(x,y,mu1,mu2,Sigma){
+    2*pmvnorm(lower = c(x,x),
+            mean=c(mu1,mu2), 
+            corr=Sigma) +
+    1*pmvnorm(lower = c(y,-x),
+              upper = c(Inf,x),
+              mean=c(mu1,mu2), 
+              corr=Sigma) +
+    1*pmvnorm(lower = c(-x,y),
+              upper = c(x,Inf),
+              mean=c(mu1,mu2), 
+              corr=Sigma) +
+    2*pmvnorm(upper = c(-x,-x),
+              mean=c(mu1,mu2), 
+              corr=Sigma) +
+    1*pmvnorm(lower = c(-x,-Inf),
+              upper = c(x,-y),
+              mean=c(mu1,mu2), 
+              corr=Sigma) +
+    1*pmvnorm(lower = c(-Inf,-x),
+              upper = c(-y,x),
+              mean=c(mu1,mu2), 
+              corr=Sigma) +
+    2*(1-(
+      pmvnorm(lower = c(-Inf,-x),
+              mean=c(mu1,mu2), 
+              corr=Sigma) + 
+        pmvnorm(upper = c(x,-x),
+                mean=c(mu1,mu2), 
+                corr=Sigma)
+    )) + 2*(1-(
+      pmvnorm(lower = c(-x,x),
+              mean=c(mu1,mu2), 
+              corr=Sigma) + 
+        pmvnorm(upper = c(Inf,x),
+                mean=c(mu1,mu2), 
+                corr=Sigma) ) )
+}
+
+
+for (j in 1:length(mu1)){
+  for (i in 1:length(mu2)){
+    
+    DCT_ad[j,i] <- average_discoveries(x=a,y=b,mu1=mu1[j],mu2=mu2[i],Sigma=Sigma)
+    P_ad[j,i] <- average_discoveries(x=a_star,y=b_star,mu1=mu1[j],mu2=mu2[i],Sigma=Sigma)
+    
+  }}
+
+plot(mu2, DCT_ad[1,], type="l", ylab="Average number of discoveries", xlab=expression(theta[2]), ylim=c(0, max(P_ad[2,])), lwd=2)
+lines(mu2, P_ad[1,], lty=2, lwd=2)
+lines(mu2, P_ad[2,], lty=2, lwd=2, col=4)
+lines(mu2, DCT_ad[2,], lwd=2, col=4)
+legend("top",
+       expression("DCT","P",
+                  paste(theta[1]," = 0"),
+                  paste(theta[1]," = 2")),
+       col=c(1,1,1,4), lty=c(1,2,1,1), lwd=2)
+```
+
+## The partitioning procedure with Dunnett's local tests for many-to-one comparisons
+
+To illustrate this approach, we consider the recovery data from Bretz et al. (2016). A company conducted a study to evaluate the effectiveness of specialized heating blankets in assisting post-surgical body heat. Four types of blankets, labeled b0, b1, b2, and b3, were tested on surgical patients to measure their impact on recovery times. The b0 blanket served as the standard option already utilized in different hospitals. The main focus was to assess the recovery time, measured in minutes, of patients randomly assigned to one of the four treatments. A shorter recovery time would indicate a more effective treatment. The key question addressed in this study is whether blanket types b1, b2, or b3 modify recovery time compared to b0. To perform a formal analysis of the data, we assume an one-way layout
+$$y_{ij} = \gamma + \mu_i + \epsilon_{ij}$$
+where $\gamma + \mu_i$ represents the expected recovery time for blanket b$i$, $i=0,1,2,3$,
+with i.i.d. errors $\epsilon_{ij} \sim N(0,\sigma^2)$.
+
+```{r, fig.height=5, fig.width=5}
+rm(list=ls())
+
+library(mvtnorm)
+library(multcomp)
+
+data("recovery", package = "multcomp")
+plot(minutes ~ blanket, data = recovery)
+fit <- aov(minutes ~ blanket, data = recovery)
+sigma <- sqrt( sum(fit$residuals^2)/fit$df.residual )
+```
+
+
+Dunnett's procedure is the standard procedure used to address the many-to-one comparisons problem. In the absence of specific information about the direction of the effect, we typically formulate two-sided null hypotheses of the form $H_i: \theta_i = 0$, where $\theta_i = \mu_i - \mu_0$ and $i=1,2,3$.
+
+```{r, fig.height=5, fig.width=5}
+set.seed(123)
+# Dunnett two-sided single step
+dun_twosided <- glht(fit,
+                  linfct = mcp(blanket = "Dunnett"),
+                  alternative = "two.sided")
+summary(dun_twosided)
+plot(confint(dun_twosided, level=0.9))
+```
+
+
+
+Step-down Dunnett procedure for two-sided hypotheses. 
+Although the step-down Dunnett procedure is more powerful, the single-step Dunnett's procedure provides simultaneous confidence intervals.
+
+```{r}
+# Dunnett two-sided step-down
+summary(dun_twosided, test = adjusted(type = "free"))
+```
+
+Dunnett's local test for the orthant hypothesis $J_K: \{\bigcap_{i \in K} K_i\} \cap \{\bigcap_{i \notin K}H^-_i\}$ is given by
+$$\psi_{K} = 1\{  \max(\{\hat{\theta}_i, i\in K^c  \}\cup \{-\hat{\theta}_j, j\in  K  \}) > c_{\alpha}(K) \}$$
+where $\hat{\theta}_i$ is the estimate of $\theta_i$ and $c_{\alpha}( K)$ represents the $(1-\alpha)$-quantile of the maximum of an $n$-variate $t$ distribution with a correlation matrix that has off-diagonal elements whose sign depends on $K$. 
+
+For example, the Dunnett's local test for the orthant hypothesis $J_K$ with $K=\{1,2\}$:
+
+```{r}
+# Contrast matrix
+contr <- rbind("b1 -b0" = c(-1, 1, 0, 0),
+               "b2 -b0" = c(-1, 0, 1, 0),
+               "b3 -b0" = c(1, 0, 0, -1))
+# Index set K
+as.numeric(which(contr[,1]==-1))
+RES <- summary(glht(fit, linfct = mcp(blanket = contr),alternative = "less"))
+# P-value
+min(RES$test$pvalues)
+# Correlation matrix
+VC <- RES$lin %*% RES$vcov %*% t(RES$lin)
+D <- diag(1/sqrt(diag(VC)))
+COR <- D %*% VC %*% D
+COR
+# Critical value
+alpha = 0.1
+qmvt(1-alpha, corr = COR, df = RES$df, tail = "lower.tail")$quantile
+# Test statistic
+max(-RES$test$tstat)
+```
+
+The partitioning procedure with Dunnett's local tests:
+
+```{r, echo=FALSE}
+alpha = 0.1
+set.seed(123)
+PV <- vector()
+CR <- vector()
+STAT <- vector()
+K <- list()
+CONTR <- list()
+#+++
+CONTR[[1]] <- rbind("b1 -b0" = c(-1, 1, 0, 0),
+               "b2 -b0" = c(-1, 0, 1, 0),
+               "b3 -b0" = c(-1, 0, 0, 1))
+#++-
+CONTR[[2]] <- rbind("b1 -b0" = c(-1, 1, 0, 0),
+               "b2 -b0" = c(-1, 0, 1, 0),
+               "b3 -b0" = c(1, 0, 0, -1))
+#+-+
+CONTR[[3]] <- rbind("b1 -b0" = c(-1, 1, 0, 0),
+               "b2 -b0" = c(1, 0, -1, 0),
+               "b3 -b0" = c(-1, 0, 0, 1))
+#+-+
+CONTR[[4]] <- rbind("b1 -b0" = c(-1, 1, 0, 0),
+               "b2 -b0" = c(1, 0, -1, 0),
+               "b3 -b0" = c(-1, 0, 0, 1))
+#+--
+CONTR[[5]] <- rbind("b1 -b0" = c(-1, 1, 0, 0),
+                 "b2 -b0" = c(1, 0, -1, 0),
+                 "b3 -b0" = c(1, 0, 0, -1))
+#-+-
+CONTR[[6]] <- rbind("b1 -b0" = c(1, -1, 0, 0),
+               "b2 -b0" = c(-1, 0, 1, 0),
+               "b3 -b0" = c(1, 0, 0, -1))
+#--+
+CONTR[[7]] <- rbind("b1 -b0" = c(1, -1, 0, 0),
+               "b2 -b0" = c(1, 0, -1, 0),
+               "b3 -b0" = c(-1, 0, 0, 1))
+#---
+CONTR[[8]] <- rbind("b1 -b0" = c(1, -1, 0, 0),
+               "b2 -b0" = c(1, 0, -1, 0),
+               "b3 -b0" = c(1, 0, 0, -1))
+
+for (i in 1:8){
+contr <- CONTR[[i]]
+K[[i]] <- as.numeric(which(contr[,1]==-1))
+RES <- summary(glht(fit, linfct = mcp(blanket = contr),alternative = "less"))
+PV[i] <- min(RES$test$pvalues)
+VC <- RES$lin %*% RES$vcov %*% t(RES$lin)
+D <- diag(1/sqrt(diag(VC)))
+COR <- D %*% VC %*% D
+DF <- RES$df
+CR[i] <- qmvt(1-alpha, corr = COR, df = DF, tail = "lower.tail")$quantile
+STAT[i] <- max(-RES$test$tstat)
+}
+
+kableExtra::kable(cbind(K,round(STAT,3),round(CR,3), round(PV,3)), col.names=c("K","Statistic","Critical value","P-value")) 
+```
+
+Adjusted $p$-values for base hypotheses:
+
+```{r, echo=FALSE}
+q1 = max(PV[ sapply(1:length(K), function(i) 1 %in% K[[i]]) ])
+q2 = max(PV[ sapply(1:length(K), function(i) 2 %in% K[[i]]) ])
+q3 = max(PV[ sapply(1:length(K), function(i) 3 %in% K[[i]]) ])
+p1 = max(PV[ sapply(1:length(K), function(i) 1 %in% setdiff(1:3,K[[i]])) ])
+p2 = max(PV[ sapply(1:length(K), function(i) 2 %in% setdiff(1:3,K[[i]])) ])
+p3 = max(PV[ sapply(1:length(K), function(i) 3 %in% setdiff(1:3,K[[i]])) ])
+
+kableExtra::kable(cbind(c("H1-","H2-","H3-"),round(c(p1,p2,p3),3),c("K1","K2","K3"),round(c(q1,q2,q3),3)) , col.names=c("Hypothesis","Adjusted p-value", "Hypothesis","Adjusted p-value"))
+```
 
