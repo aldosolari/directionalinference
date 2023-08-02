@@ -73,7 +73,11 @@ n^{-}(I)+n^{0}(I)
 \geq 
 \bar{\ell}_{\alpha}^{-}(I),
  \mathrm{\,\,for\,\,all\,\,}I  \Big) \geq 1- \alpha.$$
-For finding $\bar{\ell}_{\alpha}^+(I)$ and $\bar{\ell}_{\alpha}^-(I)$ we use the *partitioning principle* to the $2^n$ orthants defined by $\theta_i \in \{(-\infty,0],(0,\infty)\}, i=1,\ldots, n$. Heller & Solari (2023) showed that the bounds obtained through the partitioning principle with *adaptive tests* uniformly improves upon the DCT bounds:
+So the hypotheses considered for $i=1,\ldots,n$ are:
+$$
+ H_i^-: \theta_i \leq 0, \quad K_i: \theta_i > 0, \quad i=1,\ldots,n.
+$$
+Exactly one of the hypotheses pairs is true. For finding $\bar{\ell}_{\alpha}^+(I)$ and $\bar{\ell}_{\alpha}^-(I)$ we use the *partitioning principle* to the $2^n$ orthants defined by $\theta_i \in \{(-\infty,0],(0,\infty)\}, i=1,\ldots, n$. Heller & Solari (2023) showed that the bounds obtained through the *adaptive local tests* with partitioning principle (AP) uniformly improves upon the DCT bounds:
 $\bar{\ell}_{\alpha}^{+}(I)\geq \ell_{\alpha}^{+}(I)$, $\bar{\ell}_{\alpha}^{-}(I)\geq \ell_{\alpha}^{-}(I)$. 
 
 Heller, R. and Solari, A. (2022). Simultaneous directional inference. arXiv preprint arXiv:2301.01653
