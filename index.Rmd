@@ -247,8 +247,8 @@ colnames(RES) <- c("Local test","Procedure", "LO+","UP+","D+", "LO-","UP-","D-")
 for (i in 1:4){
  res_bound <- nplus_bound(p_right_tail, method=RES[2*i,1], alpha=alpha)
  res_d <- nplus_fwer(p_right_tail, method=RES[2*i,1], alpha=alpha)
- res_dct_lo <- length(S_minus) - sum(nplus_pvalue(p_right_tail, method=RES[2*i,1], ix = S_minus) > alpha) + 1
- res_dct_up <- n - (length(S_plus) - sum(nplus_pvalue(p_right_tail, method=RES[2*i,1], ix = S_plus) > alpha) + 1) 
+ res_dct_lo <- min(which(nplus_pvalue(p_right_tail, method=RES[2*i,1], ix = S_minus) > alpha)) - 1
+ res_dct_up <- n - (length(S_plus) - max(which(nplus_pvalue(p_right_tail, method=RES[2*i,1], ix = S_plus) > alpha)) + 1)
  RES[(2*i)-1,3] <- res_bound$lo
  RES[2*i,3] <- res_dct_lo
  RES[(2*i)-1,4] <- res_bound$up
