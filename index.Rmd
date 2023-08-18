@@ -241,14 +241,14 @@ alpha = 0.05
 S_minus = which(p_right_tail <= 0.5)
 S_plus = which(p_right_tail > 0.5)
 RES = matrix(NA, ncol=8, nrow=8)
-RES[,1] = rep(c("Fisher","Simes","mSimes","ALRT"),each=2)
+RES[,1] = rep(c("Fisher","Simes","ASimes","ALRT"),each=2)
 RES[,2] = rep(c("P","DCT"),4)
 colnames(RES) <- c("Local test","Procedure", "LO+","UP+","D+", "LO-","UP-","D-")
 for (i in 1:4){
- res_bound <- nplus_bound(p_right_tail, method=RES[i,1], alpha=alpha)
- res_d <- nplus_fwer(p_right_tail, method=RES[i,1], alpha=alpha)
- res_dct_lo <- min(which(nplus_pvalue(p_right_tail, method=RES[i,1], ix = S_minus) > alpha)) - 1
- res_dct_up <- n - min(which(nplus_pvalue(p_right_tail, method=RES[i,1], ix = S_plus) > alpha)) - 1 
+ res_bound <- nplus_bound(p_right_tail, method=RES[2*i,1], alpha=alpha)
+ res_d <- nplus_fwer(p_right_tail, method=RES[2*i,1], alpha=alpha)
+ res_dct_lo <- length(S_minus) - sum(nplus_pvalue(p_right_tail, method=RES[2*i,1], ix = S_minus) > alpha) + 1
+ res_dct_up <- n - (length(S_plus) - sum(nplus_pvalue(p_right_tail, method=RES[2*i,1], ix = S_plus) > alpha) + 1) 
  RES[(2*i)-1,3] <- res_bound$lo
  RES[2*i,3] <- res_dct_lo
  RES[(2*i)-1,4] <- res_bound$up
